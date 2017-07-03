@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Consulta de Folios de Educación Básica</h2>
+	    
+	    <h:form id="seguimientoForm" style="width:100%">
+	    
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	
+	    	<h:panelGrid id="panelFiltros" style="width:100%">
+	    		
+	    		<h:panelGroup id="tpoReporte">
+	    			
+    				<h:panelGrid columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;width:100%" >
+		    			<h:outputLabel value="Convocatoria *"/>
+		    			<p:selectOneMenu value="#{segFoliosBean.idConvocatoria}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segFoliosBean.lstConvocatoria}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Función"/>
+		    			<p:selectOneMenu value="#{segFoliosBean.idFuncion}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segFoliosBean.lstFuncion}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Asignatura"/>
+		    			<p:selectOneMenu value="#{segFoliosBean.idAsignatura}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segFoliosBean.lstAsignatura}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Status"/>
+		    			<p:selectOneMenu value="#{segFoliosBean.idStatus}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segFoliosBean.lstStatus}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Folio federal"/>
+		    			<p:inputText value="#{segFoliosBean.folio}" maxlength="12" size="15" />
+
+		    			<h:outputLabel value="CURP"/>
+		    			<p:inputText value="#{segFoliosBean.curp}" maxlength="18" size="20" />
+
+		    			<h:outputLabel value="Nombre"/>
+		    			<p:inputText value="#{segFoliosBean.nombre}" maxlength="100" size="70" />
+
+    				</h:panelGrid>
+
+			    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+			    		<p:commandButton value="Consultar" action="#{segFoliosBean.consultar}" icon="ui-icon-gear" 
+			    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+			    							update="panelFiltros"/>
+			    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+			    			<p:ajax event="click" update="panelFiltros" listener="#{segFoliosBean.limpiar}"></p:ajax>
+			    		</p:commandButton>
+			    	</h:panelGrid>
+	    			
+	    			<h:panelGroup rendered="#{not empty segFoliosBean.lstAspirante}" >
+				        
+				        <p:dataTable id="dataAsp" var="data" value="#{segFoliosBean.lstAspirante}" 
+				        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+				        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+				        			  
+				            <f:facet name="header">
+				            	<p:outputLabel>Aspirantes</p:outputLabel>
+				            </f:facet>
+
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Folio Federal"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.folioFederal}" />
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="CURP"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.curp}" />
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Nombre"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.nombre}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Tipo Convocatoria"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.tipoConvocatoria}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Función"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.funcion}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Plaza"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.plaza}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Asignatura"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.asignatura}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Grupo Desempeño"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.gpoDesmo}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Prelación"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.prelac}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Estatus"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.descStatus}"/>
+				            </p:column>
+				            <p:column exportable="false" >
+				            	<f:facet name="header">
+				            		<h:outputText value="Detalle"/>
+				            	</f:facet>
+				            	<h:panelGroup rendered="#{data.status == '2'}">
+				            		<h:outputText value="#{data.cct}"/>
+				            	</h:panelGroup>
+				            	<h:panelGroup rendered="#{data.status == '3'}">
+				            		<h:outputText value="#{data.motivoRechazo.descMotivo}"/>
+				            	</h:panelGroup>
+								<h:panelGroup rendered="#{(data.status != '2') and (data.status != '3')}">
+									<h:outputText value="N/A"/>
+								</h:panelGroup>
+				            </p:column>
+
+				            <p:column exportable="false" >
+				            	<f:facet name="header">
+				            		<h:outputText value="Detalle"/>
+				            	</f:facet>
+				            	<h:panelGroup rendered="#{(data.status == '2') or (data.status == '3')}">
+					            	<p:commandLink actionListener="#{segFoliosBean.obtenerInfoEstatus(data)}" process="@this"
+					            					update=":seguimientoForm:panelInfoEstatus" oncomplete="PF('vacanteDialog').show();" >
+					            		<h:outputText value="#{data.descStatus}"/>
+					            	</p:commandLink>
+				            	</h:panelGroup>
+				            </p:column>
+				            
+				            <p:column exportable="false" rendered="#{loginBean.usuario.lstPermiso.contains('funRegSisFed')}" >
+				            	<f:facet name="header">
+				            		<h:outputText value=""/>
+				            	</f:facet>
+				            	<h:panelGroup rendered="#{((data.status == '2') or (data.status == '3')) and (data.bndRegSisFed == '0')}">
+									<p:commandLink actionListener="#{segFoliosBean.prepararRegistro(data)}" 
+													update=":seguimientoForm:panelConfirm" oncomplete="PF('asgConfirmDlg').show();" >
+										<h:panelGroup styleClass="ui-icon ui-icon-extlink" />
+									</p:commandLink>				            		
+				            	</h:panelGroup>
+				            	<h:panelGroup rendered="#{((data.status == '2') or (data.status == '3')) and (data.bndRegSisFed == '1')}">
+									<h:graphicImage library="img" name="check.png" />
+				            	</h:panelGroup>
+				            </p:column>
+
+				            <p:column exportable="false" rendered="#{loginBean.usuario.lstPermiso.contains('funHstEstatus')}" >
+				            	<f:facet name="header">
+				            		<h:outputText value=""/>
+				            	</f:facet>
+				            	<h:panelGroup >
+									<p:commandLink actionListener="#{segFoliosBean.obtenerHistorico(data)}" 
+													update=":seguimientoForm:panelHistorico" oncomplete="PF('historicoDialog').show();" >
+										<h:panelGroup styleClass="ui-icon ui-icon-calendar" />
+									</p:commandLink>				            		
+				            	</h:panelGroup>
+				            </p:column>
+
+				        </p:dataTable>
+
+						<p:dialog header="Detalle de Estatus" widgetVar="vacanteDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+							<p:outputPanel id="panelInfoEstatus" style="text-align:center;">
+									<p:panelGrid columns="4" styleClass="tablaIncidencias" style="margin-bottom:20px;" 
+												columnClasses="panelGrid-label,panelGrid-value,panelGrid-label,panelGrid-value" >
+						                <h:outputText value="Folio Federal:" />
+						                <h:outputText value="#{segFoliosBean.aspiranteSeleccionado.folioFederal}" />
+
+						                <h:outputText value="Nombre:" />
+						                <h:outputText value="#{segFoliosBean.aspiranteSeleccionado.nombre}" />
+									</p:panelGrid>
+							
+								<p:panelGrid columns="1" rendered="#{not empty segFoliosBean.vacanteAspiranteDTO}" >
+					 				<p:panelGrid columns="2" styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value" >
+						                <h:outputText value="Id Vacante:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.cve}" />
+
+						                <h:outputText value="Tipo de función:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.funcion}" />
+
+						                <h:outputText value="Tipo de vacante:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.tpoVacante}" />
+
+						                <h:outputText value="Asignatura:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.asginatura}" />
+
+						                <h:outputText value="Plaza/Jornada:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.descTpoVacante}" />
+
+						                <h:outputText value="Número de horas:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.horas}" />
+
+						                <h:outputText value="CCT:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.cmpCCT}" />
+
+						                <h:outputText value="Nombre CCT:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.nomCCT}" />
+
+						                <h:outputText value="Turno:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.turno}" />
+
+						                <h:outputText value="Fecha de inicio:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.fechaInicio}" />
+
+						                <h:outputText value="Fecha de termino:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.fechaTermino}" />
+						                
+						                <h:outputText value="Municipio:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.municipio}" />
+
+						                <h:outputText value="Localidad:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.localidad}" />
+
+						                <h:outputText value="Clave presupuestal:" />
+						                <h:outputText value="#{segFoliosBean.vacanteAspiranteDTO.cvePresupuestal}" />
+					 				</p:panelGrid>
+								</p:panelGrid>
+								<p:panelGrid columns="1" rendered="#{not empty segFoliosBean.rechazoAspiranteDTO}" >
+					                <p:panelGrid columns="2" styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value" >
+						                <h:outputText value="Id Motivo:" />
+						                <h:outputText value="#{segFoliosBean.rechazoAspiranteDTO.idMotivo}" />
+
+						                <h:outputText value="Motivo:" />
+						                <h:outputText value="#{segFoliosBean.rechazoAspiranteDTO.descMotivo}" />
+
+						                <h:outputText value="Fecha:" />
+						                <h:outputText value="#{segFoliosBean.rechazoAspiranteDTO.fecRechazo}" />
+
+						                <h:outputText value="Observación:" />
+						                <h:outputText value="#{segFoliosBean.rechazoAspiranteDTO.observacion}" />
+					                
+					                </p:panelGrid>
+								</p:panelGrid>
+							</p:outputPanel>
+						</p:dialog>
+
+					    <p:dialog header="Histórico Estatus" widgetVar="historicoDialog" width="700" 
+					    					modal="true" showEffect="fade" hideEffect="fade" resizable="true" closeOnEscape="true" >
+					        <p:outputPanel id="panelHistorico" style="text-align:center;">
+				    			<h:panelGroup  >
+									<p:panelGrid columns="4" styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value,panelGrid-label,panelGrid-value" >
+						                <h:outputText value="Folio Federal:" />
+						                <h:outputText value="#{segFoliosBean.aspiranteSeleccionado.folioFederal}" />
+
+						                <h:outputText value="Nombre:" />
+						                <h:outputText value="#{segFoliosBean.aspiranteSeleccionado.nombre}" />
+									</p:panelGrid>
+
+							        <p:dataTable id="dataHisto" var="data" value="#{segFoliosBean.lstHistoricoEstatus}" style="margin-top:20px;"
+							        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+							        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+							            <p:column headerText="Id. Hst.">
+							                <h:outputText value="#{data.idHistorico}" />
+							            </p:column>
+							            <p:column headerText="Id. Estatus">
+							                <h:outputText value="#{data.idEstatus}"/>
+							            </p:column>
+							            <p:column headerText="Estatus">
+							                <h:outputText value="#{data.descEstatus}" />
+							            </p:column>
+							            <p:column headerText="Detalle">
+							                <h:outputText value="#{data.detalleEstatus}"/>
+							            </p:column>
+							            <p:column headerText="Observación">
+							                <h:outputText value="#{data.observacion}"/>
+							            </p:column>
+							            <p:column headerText="Fecha">
+							                <h:outputText value="#{data.fechaEstatus}"/>
+							            </p:column>
+							            <p:column headerText="Usuario">
+							                <h:outputText value="#{data.usuarioEstatus}"/>
+							            </p:column>
+							        </p:dataTable>
+		
+				    			</h:panelGroup>
+					        
+					        </p:outputPanel>
+					    </p:dialog>
+
+						<p:confirmDialog widgetVar="asgConfirmDlg" header="Confirmación" severity="alert" width="500" closable="false" >
+							<f:facet name="message">
+								<h:outputText value="Se confirmará el registro, en el Sistema Federal, de:" />
+								<h:panelGrid id="panelConfirm" columns="2" style="width:100%;margin-top:20px;margin-bottom:20px;"  styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value" >
+									<p:outputLabel  value="Folio Federal"/>
+									<p:outputLabel value="#{segFoliosBean.aspiranteSeleccionado.folioFederal}" />
+
+									<p:outputLabel  value="CURP"/>
+									<p:outputLabel value="#{segFoliosBean.aspiranteSeleccionado.curp}" />
+
+									<p:outputLabel  value="Nombre"/>
+									<p:outputLabel value="#{segFoliosBean.aspiranteSeleccionado.nombre}" />
+									
+									<h:outputText value="Observación" />
+									<h:panelGrid columns="1">
+										<p:inputTextarea value="#{segFoliosBean.observacion}" rows="5" cols="50" counter="contador0" maxlength="200" counterTemplate="{0} caracteres restantes." autoResize="false" />
+										<h:outputText id="contador0" styleClass="contador" />
+									</h:panelGrid>
+
+								</h:panelGrid>
+								<h:outputText value="¿Deseas continuar?" />
+							</f:facet>
+							<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+						    	<p:commandButton value="Registrar" action="#{segFoliosBean.confirmarRegistro}" update="dataAsp" onclick="PF('asgConfirmDlg').hide();" />
+						    	<p:commandButton value="Verificar" onclick="PF('asgConfirmDlg').hide();" />
+						    </h:panelGrid>							    
+						</p:confirmDialog>
+						    
+				        <p:panel header="Exportar" rendered="#{not empty segFoliosBean.lstAspirante}">
+				            <h:commandLink>
+				                <p:graphicImage library="img" name="file_xls.png" />
+				                <p:dataExporter type="xls" 
+				                    target="dataAsp" fileName="ListadoAspirantes_XLS" postProcessor="#{consultaAtpBean.postProcesoXLS}" />
+				            </h:commandLink>
+				        </p:panel>
+
+	    			</h:panelGroup>
+
+	    		</h:panelGroup>
+
+	    	</h:panelGrid>
+
+	    	<pe:blockUI widgetVar="blockUIWidget1">
+	    		<h:panelGrid columns="1">
+	    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+	    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+	    		</h:panelGrid>	
+	    	</pe:blockUI>	    	
+	    </h:form>
+	    
+	</ui:define>
+</ui:composition>
+</html>

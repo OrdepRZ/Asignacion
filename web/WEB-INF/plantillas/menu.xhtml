@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions">
+	  
+<h:head>
+</h:head>
+
+<body>
+	<div style="width:100%;">
+		<h3><p:outputLabel value="Bienvenido, #{loginBean.usuario.nombreCompleto}" /> </h3>
+		<h5><p:outputLabel value="Sede: #{loginBean.usuario.nombreSede}" rendered="#{loginBean.usuario.nombreSede != null}" /> </h5>
+		<h:form>
+			<p:megaMenu>
+				<p:menuitem value="Inicio" icon="ui-icon-home" action="#{navegacionBean.redireccionarAInicio}" />
+
+				<p:submenu label="Asignación" icon="ui-icon-note" rendered="#{loginBean.usuario.lstPermiso.contains('menuAsignacion')}">
+					<p:column>
+						<p:submenu label="Asignación" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaAsignacion')}">
+							<p:menuitem value="Folio" action="#{navegacionBean.asgFolio}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Definitiva" action="#{navegacionBean.asgDefinitiva}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAsgDef')}"/>
+						</p:submenu>
+						<p:submenu label="Rechazo" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaRechazo')}">
+							<p:menuitem value="Folio" action="#{navegacionBean.rechazoFolio}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+						</p:submenu>
+						<p:submenu label="Seguimiento" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaSeguimiento')}">
+							<p:menuitem value="Vacancia" action="#{navegacionBean.asgSegPlazas}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgSegVacancia')}"/>
+							<p:menuitem value="Folios" action="#{navegacionBean.asgSegFolios}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgSegFolios')}"/>
+							<p:menuitem value="Georeferenciación" action="#{navegacionBean.asgSegGeoref}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Plazas de Nivel" action="#{navegacionBean.asgEdiPlazasNivel}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegEditPlaza')}"/>
+							<p:menuitem value="Registro Vacante" action="#{navegacionBean.asgRegVacante}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegRegVacante')}"/>
+							<p:menuitem value="Citas" action="#{navegacionBean.asgRegCita}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegRegCita')}"/>
+						</p:submenu>
+					</p:column>
+					<p:column>
+						<p:submenu label="Carga Documentos" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaCarga')}">
+							<p:menuitem value="Carga" action="#{navegacionBean.asgCargaDoc}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+						</p:submenu>
+						<p:submenu label="Reportes" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaReportes')}">
+							<p:menuitem value="Asignación" action="#{navegacionBean.asgRptAsignacion}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Rechazo" action="#{navegacionBean.asgRptRechazo}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Citas" action="#{navegacionBean.asgRptCita}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subRptConsCita')}"/>
+						</p:submenu>
+						<p:submenu label="Administración" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaAdministracion')}">
+							<p:menuitem value="Reversa Estatus" action="#{navegacionBean.asgAdminReversaStatus}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgSegReversaStatus')}"/>
+							<p:menuitem value="Respaldo Nombramientos"  action="#{navegacionBean.respaldoNomb}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdmonRespaldoNom')}"/>
+							<p:menuitem value="Respaldo Nombramientos Mongo"  action="#{navegacionBean.asgAdminRespNombMongo}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdmonRespaldoNom')}"/>
+							<p:menuitem value="Test FirmaDigital4" action="#{navegacionBean.asgAdminTestFirmDig4}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{(loginBean.usuario.cveUsuario == 'admin') or (loginBean.usuario.cveUsuario == 'pedro.romero') }"/>
+							<p:menuitem value="Validación CURP" action="#{navegacionBean.validacionCurp}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdminValidacionCurp')}"/>						
+						</p:submenu>					
+					</p:column>
+				</p:submenu>
+
+				<p:submenu label="Asignación MS" icon="ui-icon-note" rendered="#{loginBean.usuario.lstPermiso.contains('menuAsignacionMS')}">
+					<p:column>
+						<p:submenu label="Asignación" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaAsignacionMS')}">
+							<p:menuitem value="Folio" action="#{navegacionBean.asgFolioMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+						</p:submenu>
+						<p:submenu label="Nombramiento" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaNombramientoMS')}">
+							<p:menuitem value="Folio" action="#{navegacionBean.asgNombrMSFolio}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+						</p:submenu>
+						<p:submenu label="Rechazo" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaRechazoMS')}">
+							<p:menuitem value="Folio" action="#{navegacionBean.rechazoFolioMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+						</p:submenu>						
+						<p:submenu label="Seguimiento" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaSeguimientoMS')}">
+							<p:menuitem value="Vacancia" action="#{navegacionBean.asgSegPlazasMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgSegVacanciaMS')}"/>
+							<p:menuitem value="Folios" action="#{navegacionBean.asgSegFoliosMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgSegFoliosMS')}"/>
+							<p:menuitem value="Georeferenciación" action="#{navegacionBean.asgSegGeorefMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Plazas de Nivel" action="#{navegacionBean.asgEdiPlazasNivelMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegEditPlazaMS')}"/>
+							<p:menuitem value="Registro Vacante" action="#{navegacionBean.asgRegVacanteMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegRegVacanteMS')}"/>
+							<p:menuitem value="Citas" action="#{navegacionBean.asgRegCitaMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subSegRegCitaMS')}"/>																						
+						</p:submenu>
+					</p:column>
+					<p:column>
+						<p:submenu label="Reportes" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaReportesMS')}">
+							<p:menuitem value="Asignación" action="#{navegacionBean.asgRptAsignacionMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Rechazo" action="#{navegacionBean.asgRptRechazoMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"/>
+							<p:menuitem value="Citas" action="#{navegacionBean.asgRptCitaMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('subRptConsCitaMS')}"/>						
+													
+						</p:submenu>
+						<p:submenu label="Administración" rendered="#{loginBean.usuario.lstPermiso.contains('subAsignaAdministracionMS')}">
+							<p:menuitem value="Desasignación" action="#{navegacionBean.asgAdminDesasignarMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdminDesasignacionMS')}"/>
+							<p:menuitem value="Reversa Estatus" action="#{navegacionBean.asgAdminReversaStatusMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdminReversaStatusMS')}"/>
+							<p:menuitem value="Respaldo Nombramientos" action="#{navegacionBean.respaldoNombMS}" onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()" rendered="#{loginBean.usuario.lstPermiso.contains('optAsgAdmonRespaldoNomMS')}"/>
+						</p:submenu>										
+					</p:column>
+				</p:submenu>
+
+						
+				<p:menuitem value="Cerrar sesión" action="#{loginBean.cerrarSesion}" icon="ui-icon-locked" />
+			</p:megaMenu>
+			
+			<pe:blockUI widgetVar="blockUIWidget" css="{top: '10px', left: '', right: '10px', cursor: 'wait'}" centerY="false" >
+			    <h:panelGrid columns="1">
+			    <h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    <h:outputText value="Cargando ..." style="white-space: nowrap;"/>
+			    </h:panelGrid>
+			</pe:blockUI>
+
+		</h:form>
+	</div>
+</body>
+</html>

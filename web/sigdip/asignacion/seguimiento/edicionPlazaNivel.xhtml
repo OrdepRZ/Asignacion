@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+		    <h2>Edición de Plazas de Nivel de Educación Básica</h2>
+		    
+		    <h:panelGroup id="panelVista">
+			    <p:messages id="messages" autoUpdate="true" closable="true"/>
+			    <h:form id="formEdiPlaza">
+			    
+			    	<h:panelGroup id="groupConsulta" rendered="#{edicionPlazasNivelBean.bndConsulta}">
+		    			<br></br>
+		    			<h:panelGrid columns="3">
+		    				<h:outputLabel for="cct" value="CCT: *" />
+		    				<p:inputText id="cct" value="#{edicionPlazasNivelBean.idCCT}" maxlength="10" size="15"/>
+		    				<p:commandButton value="Consultar" icon="ui-icon-gear" action="#{edicionPlazasNivelBean.consultar}" 
+				    			onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    			update="groupConsulta" />
+		    			</h:panelGrid>
+		    				    			
+		    			<br></br>
+		    			
+		    			<p:dataTable value="#{edicionPlazasNivelBean.cct}" var="cct"  rendered="#{not empty edicionPlazasNivelBean.listaVacantes}"
+		    					     emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+						        	 rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}">
+						        	 
+						    <f:facet name="header">
+						    	<p:outputLabel>Datos del CCT</p:outputLabel>
+						    </f:facet>					        	 
+				            <p:column headerText="CCT">
+				                <h:outputText value="#{cct.cmpCCT}"/>
+				            </p:column>
+				            <p:column headerText="Nombre CCT">
+				                <h:outputText value="#{cct.nomCCT}"/>
+				            </p:column>	
+				            <p:column headerText="Turno">
+				                <h:outputText value="#{cct.turno}"/>
+				            </p:column>					            		            
+				            <p:column headerText="Municipio">
+				                <h:outputText value="#{cct.municipio}"/>
+				            </p:column>	
+				            <p:column headerText="Zona Escolar">
+				                <h:outputText value="#{cct.zonaEscolar}"/>
+				            </p:column>		
+				            <p:column headerText="Sd. Regional">
+				                <h:outputText value="#{cct.subdirRegional}"/>
+				            </p:column>		
+				            <p:column headerText="Región">
+				                <h:outputText value="#{cct.region}"/>
+				            </p:column>					            			            			            	
+				            <p:column headerText="Subsistema">
+				                <h:outputText value="#{cct.subsistema}"/>
+				            </p:column>					            	            	            
+			    		</p:dataTable>	    			
+		   	
+		    			<p:dataTable value="#{edicionPlazasNivelBean.listaVacantes}" var="vacante"  rendered="#{not empty edicionPlazasNivelBean.listaVacantes}"  
+		    				    	 emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+						        	 rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}">
+						        	 
+						    <f:facet name="header">
+						    	<p:outputLabel>Vacantes</p:outputLabel>
+						    </f:facet>					        	 
+			    			<p:column headerText="Clave">
+				                <h:outputText value="#{vacante.cve}" />
+				            </p:column>
+				            <p:column headerText="Convocatoria">
+				                <h:outputText value="#{vacante.descConvocatoria}"/>
+				            </p:column>					            	                        
+				            <p:column headerText="Folio">
+				                <h:outputText value="#{vacante.folio}"/>
+				            </p:column>
+				            <p:column headerText="Cve Presupuestal">
+				                <h:outputText value="#{vacante.cvePresupuestal}"/>
+				            </p:column>					            
+				            <p:column headerText="Función">
+				                <h:outputText value="#{vacante.funcion}" />
+				            </p:column>
+				            <p:column headerText="Asignatura">
+				                <h:outputText value="#{vacante.asginatura}"/>
+				            </p:column>					            
+				            <p:column headerText="Plaza/Jornada">
+				                <h:outputText value="#{vacante.descTpoVacante}"/>
+				            </p:column>
+				            <p:column headerText="Horas">
+				                <h:outputText value="#{vacante.horas}"/>
+				            </p:column>			            
+				            <p:column headerText="Edición" style="width:5%">
+								<p:commandButton id="btnEdicion" action="#{edicionPlazasNivelBean.consultaAsignacion}" update="panelVista" icon="ui-icon-pencil" title="Editar Plaza">
+					                <f:setPropertyActionListener value="#{vacante}" target="#{edicionPlazasNivelBean.vacante}" />
+					            </p:commandButton>
+							</p:column>
+			    		</p:dataTable>		    			
+			    	</h:panelGroup>
+			    	
+				    <pe:blockUI widgetVar="blockUIWidget1">
+				    	<h:panelGrid columns="1">
+				    		<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+				    		<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+				    	</h:panelGrid>	
+				    </pe:blockUI>				    	
+			    	
+			    	<h:panelGroup rendered="#{edicionPlazasNivelBean.bndPlazaAsign}" >
+			    		<br></br>
+			    		<p:panel header="Datos Generales" >
+			    			<p:panelGrid columns="4"  style="width:100%">
+			    				<h:outputText style="font-weight:bold" value="Folio Federal:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.folioFederal}" />
+				    			<h:outputText style="font-weight:bold" value="Nombre:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.nombre}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Prelación:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.prelac}" />
+				    			<h:outputText style="font-weight:bold" value="CURP:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.curp}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Convocatoria:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.descConvocatoria}" />				    			
+				    			<h:outputText style="font-weight:bold" value="Tipo de Convocatoria:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.aspirantePlaza.tipoConvocatoria}" />
+				    			
+
+				    		</p:panelGrid>
+			    		</p:panel>
+			    		
+			    		<p:panel header="Vacante Registrada" >
+			    			<p:panelGrid columns="4" style="width:100%">
+			    				<h:outputText style="font-weight:bold" value="Id:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.cve}" />
+				    			<h:outputText style="font-weight:bold" value="Clave del CCT:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.cmpCCT}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Nombre del CCT:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.nomCCT}" />
+				    			<h:outputText style="font-weight:bold" value="Turno:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.turno}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Municipio:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.municipio}" />
+				    			<h:outputText style="font-weight:bold" value="Localidad:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.localidad}" />			    			
+				    			
+				    			<h:outputText style="font-weight:bold" value="Domicilio:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.domicilio}" />	
+				    			<h:outputText style="font-weight:bold" value="Colonia:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.colonia}" />			    			
+				    			
+				    			<h:outputText style="font-weight:bold" value="Zona Escolar:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.zonaEscolar}" />			    			
+				    			<h:outputText style="font-weight:bold" value="Subdirección Regional:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.subdirRegional}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Subsistema:" />
+								<h:outputText value="#{edicionPlazasNivelBean.cct.subsistema}" />	
+				    			<h:outputText style="font-weight:bold" value="Clave Presupuestal:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.cvePresupuestal}" />	
+				    			
+				    			<h:outputText style="font-weight:bold" value="Plaza/Jornada:" />
+								<h:outputText value="#{edicionPlazasNivelBean.vacante.descTpoVacante}" />			    						    					    			
+				    			<h:outputText style="font-weight:bold" value="Número de horas:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.horas}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Fecha de Inicio:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.dFechaInicio}">
+				    				<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+				    			<h:outputText style="font-weight:bold" value="Fecha de Término:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.dFechaTermino}">
+				    				<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>		
+				    			
+				    			<h:outputText style="font-weight:bold" value="Tipo de Nombramiento:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.motivoVacante}" />
+				    			<h:outputText style="font-weight:bold" value="Tipo de Vacante:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.tpoVacante}" />			    			
+				    			
+		    					<h:outputText style="font-weight:bold" value="Tipo de Función:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.funcion}" />	
+				    			<h:outputText style="font-weight:bold" value="Asignatura:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.asginatura}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Usuario Asignación:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.usuarioAsignacion}" />
+				    			<h:outputText style="font-weight:bold" value="Fecha Asignación:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.fecAsignacion}" />
+				    		</p:panelGrid>
+				    		
+				    		<br></br>
+	
+				    		<div class="buttons" align="left">
+								<p:commandButton value="Regresar" action="#{navegacionBean.asgEdiPlazasNivel}" immediate="true" icon="ui-icon-arrowreturnthick-1-w" />						
+	                         
+							</div>				    		
+				 
+			    		</p:panel>  
+			    	</h:panelGroup>		 		
+			    		
+			    	<h:panelGroup rendered="#{edicionPlazasNivelBean.bndPlazaNoAsign}" >	
+			    		<br></br>
+			    		<p:panel header="Vacante Registrada" >
+			    			<p:panelGrid columns="4" style="width:100%">
+			    				<h:outputText style="font-weight:bold" value="Id:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.vacante.cve}" />
+				    			<h:outputText style="font-weight:bold" value="Clave del CCT:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.cmpCCT}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Nombre del CCT:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.nomCCT}"  />
+				    			<h:outputText style="font-weight:bold" value="Turno:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.turno}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Municipio:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.municipio}" />
+				    			<h:outputText style="font-weight:bold" value="Localidad:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.localidad}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Domicilio:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.domicilio}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Colonia:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.colonia}" />				    			
+				    			
+				    			<h:outputText style="font-weight:bold" value="Zona Escolar:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.zonaEscolar}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Subdirección Regional:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.subdirRegional}" />
+				    			<h:outputText style="font-weight:bold" value="Subsistema:" />
+				    			<h:outputText value="#{edicionPlazasNivelBean.cct.subsistema}" />
+				    							    			
+				    			<h:outputText style="font-weight:bold" value="Plaza/Jornada:" />
+				    			<p:selectOneMenu id="pzaJornada" style="width:300px;" value="#{edicionPlazasNivelBean.vacante.pzajornada}" required="true" requiredMessage="Favor de ingresar el Tipo de Plaza.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{edicionPlazasNivelBean.catPzaJornada}" var="pj" itemLabel="#{pj.descItem}" itemValue="#{pj.idItem}" />
+		    					</p:selectOneMenu>			    			
+		    						    						    			
+				    			<h:outputText style="font-weight:bold" value="Número de Horas:" />
+				    			<p:inputText value="#{edicionPlazasNivelBean.vacante.horas}" maxlength="2" size="40" required="true" requiredMessage="Favor de ingresar el Número de Horas."/>
+				    			
+				    			<h:outputText style="font-weight:bold" value="Fecha de Inicio:" />
+				    			<p:calendar value="#{edicionPlazasNivelBean.vacante.dFechaInicio}" pattern="dd/MM/yyyy" locale="es" showOn="button" title="formato: dd/mm/yyyy" maxlength="10" required="true" requiredMessage="Favor de ingresar la Fecha de Inicio."/>
+				    			<h:outputText style="font-weight:bold" value="Fecha de Término:" />
+				    			<p:calendar value="#{edicionPlazasNivelBean.vacante.dFechaTermino}" pattern="dd/MM/yyyy" locale="es" showOn="button" title="formato: dd/mm/yyyy" maxlength="10" required="true" requiredMessage="Favor de ingresar la Fecha de Término."/>
+				    			
+				    			<h:outputText style="font-weight:bold" value="Tipo de Nombramiento:" />
+				    			<p:selectOneMenu id="motivoVacante" style="width:300px;" value="#{edicionPlazasNivelBean.vacante.motivoVacante}" required="true" requiredMessage="Favor de ingresar el Motivo de Vacante.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{edicionPlazasNivelBean.motivosVacante}" var="mot" itemLabel="#{mot.descItem}" itemValue="#{mot.idItem}" />
+		    						<p:ajax update="tipoVacante" listener="#{edicionPlazasNivelBean.cargarTipoVacante}" />
+		    					</p:selectOneMenu>
+		    					<h:outputText style="font-weight:bold" value="Tipo de Función:" />
+				    			<p:selectOneMenu id="tipoFuncion" style="width:300px;" value="#{edicionPlazasNivelBean.vacante.idFuncion}" required="true" requiredMessage="Favor de ingresar el Tipo de Función.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{edicionPlazasNivelBean.funcionesVacante}" var="fun" itemLabel="#{fun.descripcion}" itemValue="#{fun.idItem}" />
+		    						<p:ajax update="asignatura" listener="#{edicionPlazasNivelBean.cargarAsignaturas}" /> 
+		    					</p:selectOneMenu>
+		    							    					
+				    			<h:outputText style="font-weight:bold" value="Tipo de Vacante:" />
+				    			<p:selectOneMenu id="tipoVacante" style="width:300px;" value="#{edicionPlazasNivelBean.vacante.tpoVacante}" disabled="true">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{edicionPlazasNivelBean.tiposVacante}" var="tip" itemLabel="#{tip.descripcion}" itemValue="#{tip.descripcion}" />
+		    					</p:selectOneMenu>	    					
+		    							    					
+			    					
+				    			<h:outputText style="font-weight:bold" value="Asignatura:" />
+				    			<p:selectOneMenu id="asignatura" style="width:300px;" value="#{edicionPlazasNivelBean.vacante.cveAsignatura}" required="true" requiredMessage="Favor de ingresar la Asignatura.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{edicionPlazasNivelBean.asignaturas}" var="asg" itemLabel="#{asg.descItem}" itemValue="#{asg.idItem}" />
+		    					</p:selectOneMenu>
+		    										
+				    		</p:panelGrid>
+				    		
+						   	<p:panelGrid columns="4" style="width:100%">	
+				    			<h:outputText style="font-weight:bold" value="Clave Presupuestal:" />
+								<h:panelGrid columns="1" style="width:100%">
+									<p:inputTextarea value="#{edicionPlazasNivelBean.vacante.cvePresupuestal}" rows="3" cols="139" counter="contLetras" maxlength="350" counterTemplate="{0} caracteres restantes." >
+				    					<p:ajax event="keyup" update="confirmDial" listener="#{edicionPlazasNivelBean.consultarVacantes}" />
+									</p:inputTextarea>
+									<h:outputText id="contLetras" styleClass="contador" />
+								</h:panelGrid>	
+								
+							</p:panelGrid>					    		
+				    		
+				    		<br></br>
+	
+				    		<p:growl id="message" showDetail="true" />
+				    		
+				    		<div class="buttons" align="left">
+								<p:commandButton value="Regresar" action="#{navegacionBean.asgEdiPlazasNivel}" immediate="true" icon="ui-icon-arrowreturnthick-1-w" />
+							    <p:commandButton value="Guardar" icon="ui-icon-disk" actionListener="#{edicionPlazasNivelBean.editaPlaza}" update="panelVista,confirmDial,message">	    
+							        <p:confirm header="Confirmation" message="¿Está seguro que desea realizar la modificación?" icon="ui-icon-alert" />
+							    </p:commandButton>
+							 
+							    <p:confirmDialog id="confirmDial" global="true" showEffect="fade" hideEffect="fade">
+							    
+									<h:panelGrid id="panelPresupuestal" style="width:100%"  styleClass="tablaIncidencias" >
+
+						    			<p:dataTable value="#{edicionPlazasNivelBean.listaVacantesReg}" var="vacante" rendered="#{edicionPlazasNivelBean.bndPresupuestal}"   
+						    				    	 emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+										        	 rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}">
+	
+											<f:facet name="header">
+										    	<p:outputLabel>Existen registros con la misma clave presupuestal:</p:outputLabel>
+										    </f:facet>
+							
+							    			<p:column headerText="CCT:">
+								                <h:outputText value="#{vacante.cmpCCT}" />
+								            </p:column>							
+							
+							    			<p:column headerText="Cve Presupuestal:">
+								                <h:outputText value="#{vacante.cvePresupuestal}" />
+								            </p:column>		
+								           
+							    			<p:column headerText="Folio:">
+								                <h:outputText value="#{vacante.folio}" />
+								            </p:column>								           
+								           
+							    			<p:column headerText="Convocatoria:">
+								                <h:outputText value="#{vacante.descConvocatoria}" />
+								            </p:column>	
+								            
+								            <p:column headerText="Fecha de Asignación:">						            
+								    			<h:outputText value="#{vacante.fecAsignacion}">
+								    				<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>							            
+								            </p:column>
+							    			<p:column headerText="Fecha de Inicio:">
+								    			<h:outputText value="#{vacante.dFechaInicio}">
+								    				<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>						    			
+											</p:column>
+							    			<p:column headerText="Fecha de Término:">
+								    			<h:outputText value="#{vacante.dFechaTermino}">
+								    				<f:convertDateTime pattern="dd/MM/yyyy" />
+												</h:outputText>							    		
+											</p:column>								    		
+								    			
+								    	</p:dataTable>				    			
+	
+									</h:panelGrid>
+							    
+							    
+							        <p:commandButton value="Continuar" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>							
+	                         
+							</div>		
+				
+			    		</p:panel>		    		  		    		
+				    </h:panelGroup>	 
+				       			    		    
+			    </h:form>
+		    </h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</html>

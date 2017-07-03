@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+		    <h2>Registro de Vacante de Educación Básica</h2>
+		    
+		    <h:panelGroup id="panelVista">
+			    <p:messages id="messages" autoUpdate="true" closable="true"/>
+			    <h:form id="formRegVacante">
+			    
+			    	<h:panelGroup id="groupConsulta" rendered="#{registroVacanteBean.bndConsulta}">
+		    			<br></br>
+		    			<h:panelGrid columns="3" >
+		    				<h:outputLabel for="cct" value="CCT: *" />
+		    				<p:inputText id="cct" value="#{registroVacanteBean.idCCT}" maxlength="10" size="15"/>
+		    				<p:commandButton value="Consultar" icon="ui-icon-gear" action="#{registroVacanteBean.consultar}"
+				    			onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    			update="panelVista"/>
+		    			</h:panelGrid>
+		    			
+		    			<br></br>
+		    		</h:panelGroup>
+		    		
+				    <pe:blockUI widgetVar="blockUIWidget1">
+				    	<h:panelGrid columns="1">
+				    		<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+				    		<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+				    	</h:panelGrid>	
+				    </pe:blockUI>			    		
+		    			
+			 		<h:panelGroup rendered="#{registroVacanteBean.bndRegistro}">
+			 			<br></br>		    			    		
+			    		<p:panel header="Datos de la nueva vacante" >
+			    			<p:panelGrid columns="4" style="width:100%">
+				    			
+				    			<h:outputText style="font-weight:bold" value="Clave del CCT:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.cmpCCT}" />	
+				    			<h:outputText style="font-weight:bold" value="Nombre del CCT:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.nomCCT}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Turno:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.turno}" />	
+				    			<h:outputText style="font-weight:bold" value="Municipio:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.municipio}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Localidad:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.localidad}" />
+				    			<h:outputText style="font-weight:bold" value="Domicilio:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.domicilio}" />
+				    				
+				    			<h:outputText style="font-weight:bold" value="Colonia: " />
+				    			<h:outputText value="#{registroVacanteBean.cct.colonia}" />			    			
+				    			<h:outputText style="font-weight:bold" value="Zona Escolar: " />
+				    			<h:outputText value="#{registroVacanteBean.cct.zonaEscolar}" />
+				    			
+				    			<h:outputText style="font-weight:bold" value="Subdirección Regional:" />
+				    			<h:outputText value="#{registroVacanteBean.cct.subdirRegional}" maxlength="30" size="40" required="true" requiredMessage="Favor de ingresar la Subdirección Regional."/>
+				    			
+				    			<h:outputText style="font-weight:bold" value="Subsistema:" />
+								<h:outputText value="#{registroVacanteBean.cct.subsistema}" />				    			
+				    						    			
+		
+				    			<h:outputText style="font-weight:bold" value="Tipo de Plaza:*" />
+				    			<p:selectOneMenu id="pzaJornada" style="width:300px;" value="#{registroVacanteBean.idTipoPlaza}" required="true" requiredMessage="Favor de ingresar el Tipo de Plaza.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{registroVacanteBean.catPzaJornada}" var="pj" itemLabel="#{pj.descItem}" itemValue="#{pj.idItem}" />
+		    					</p:selectOneMenu>			    			
+				    			<h:outputText style="font-weight:bold" value="Número de Horas:*" />
+				    			<p:inputText value="#{registroVacanteBean.horas}" maxlength="2" size="40" required="true" requiredMessage="Favor de ingresar el Número de Horas."/>
+				    					    			
+				    			<h:outputText style="font-weight:bold" value="Fecha de Inicio:*" />
+				    			<p:calendar value="#{registroVacanteBean.dFechaInicio}" pattern="dd/MM/yyyy" locale="es" showOn="button" title="formato: dd/mm/yyyy" maxlength="10" required="true" requiredMessage="Favor de ingresar la Fecha de Inicio."/>	    							    				    							    			
+		    							    			
+				    			<h:outputText style="font-weight:bold" value="Fecha de Término:*" />
+				    			<p:calendar value="#{registroVacanteBean.dFechaTermino}" pattern="dd/MM/yyyy" locale="es" showOn="button" title="formato: dd/mm/yyyy" maxlength="10" required="true" requiredMessage="Favor de ingresar la Fecha de Término."/>			    						    						    						    				    						    				    							    						    						    			
+				    							    			
+				    			<h:outputText style="font-weight:bold" value="Tipo de Nombramiento:*" />
+				    			<p:selectOneMenu id="motivoVacante" style="width:300px;" value="#{registroVacanteBean.idMotivoVac}" required="true" requiredMessage="Favor de ingresar el Motivo de Vacante.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{registroVacanteBean.motivosVacante}" var="mot" itemLabel="#{mot.descItem}" itemValue="#{mot.idItem}" />
+		    						<p:ajax update="tipoVacante" listener="#{registroVacanteBean.cargarTipoVacante}" />
+		    					</p:selectOneMenu>
+		    					
+		    					<h:outputText style="font-weight:bold" value="Tipo de Función:*" />
+				    			<p:selectOneMenu id="tipoFuncion" style="width:300px;" value="#{registroVacanteBean.idFuncion}" required="true" requiredMessage="Favor de ingresar el Tipo de Función.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{registroVacanteBean.funcionesVacante}" var="fun" itemLabel="#{fun.descripcion}" itemValue="#{fun.idItem}" />
+		    						<p:ajax update="asignatura" listener="#{registroVacanteBean.cargarAsignaturas}" /> 
+		    					</p:selectOneMenu>	    						    					
+				    			<h:outputText style="font-weight:bold" value="Tipo de Vacante:*" />
+				    			<p:selectOneMenu id="tipoVacante" style="width:300px;" value="#{registroVacanteBean.idTipoVac}"  disabled="true">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{registroVacanteBean.tiposVacante}" var="tip" itemLabel="#{tip.descripcion}" itemValue="#{tip.idItem}" />
+		    					</p:selectOneMenu>	
+					    					    						    					    					
+				    			<h:outputText style="font-weight:bold" value="Asignatura:*" />
+				    			<p:selectOneMenu id="asignatura" style="width:300px;" value="#{registroVacanteBean.idAsignatura}" required="true" requiredMessage="Favor de ingresar la Asignatura.">
+		    						<f:selectItem itemLabel="Seleccionar" itemValue=""/>
+		    						<f:selectItems value="#{registroVacanteBean.asignaturas}" var="asg" itemLabel="#{asg.descItem}" itemValue="#{asg.idItem}" />
+		    					</p:selectOneMenu>		    					
+			
+				    		</p:panelGrid>
+				    		
+						   	<p:panelGrid columns="4" style="width:100%">	
+				    			<h:outputText style="font-weight:bold" value="Clave Presupuestal:" />
+								<h:panelGrid columns="1" style="width:100%">
+									<p:inputTextarea value="#{registroVacanteBean.cvePresupuestal}" rows="4" cols="109" counter="contLetras" maxlength="350" counterTemplate="{0} caracteres restantes." >
+				    					<p:ajax event="keyup" update="confirmDial" listener="#{registroVacanteBean.consultarVacantes}" />
+									</p:inputTextarea>
+									<h:outputText id="contLetras" styleClass="contador" />
+								</h:panelGrid>	
+								
+							</p:panelGrid>					    		
+				    		
+				    		<br></br>
+	
+				    		<p:growl id="message" showDetail="true" />
+				    		
+				    		<div class="buttons"  align="left">
+								<p:commandButton value="Regresar" action="#{navegacionBean.asgRegVacante}" immediate="true" icon="ui-icon-arrowreturnthick-1-w"/>
+							    <p:commandButton value="Registrar" actionListener="#{registroVacanteBean.registrarVacante}" update="panelVista,confirmDial,message" icon="ui-icon-disk">
+							        <p:confirm header="Confirmación" message="¿Está seguro que desea realizar el registro?" icon="ui-icon-alert" />
+							    </p:commandButton>
+							 
+							    <p:confirmDialog id="confirmDial" global="true" showEffect="fade" hideEffect="fade" position="center">
+							    <h:panelGrid id="panelPresupuestal" style="width:100%"  styleClass="tablaIncidencias" >
+
+					    			<p:dataTable value="#{registroVacanteBean.listaVacantes}" var="vacante" rendered="#{registroVacanteBean.bndPresupuestal}"   
+					    				    	 emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+									        	 rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}">
+
+										<f:facet name="header">
+									    	<p:outputLabel>Existen registros con la misma clave presupuestal:</p:outputLabel>
+									    </f:facet>
+						
+						    			<p:column headerText="CCT:">
+							                <h:outputText value="#{vacante.cmpCCT}" />
+							            </p:column>							
+						
+						    			<p:column headerText="Cve Presupuestal:">
+							                <h:outputText value="#{vacante.cvePresupuestal}" />
+							            </p:column>		
+							           
+						    			<p:column headerText="Folio:">
+							                <h:outputText value="#{vacante.folio}" />
+							            </p:column>								           
+							           
+						    			<p:column headerText="Convocatoria:">
+							                <h:outputText value="#{vacante.descConvocatoria}" />
+							            </p:column>	
+							            
+							            <p:column headerText="Fecha de Asignación:">						            
+							    			<h:outputText value="#{vacante.fecAsignacion}">
+							    				<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>							            
+							            </p:column>
+						    			<p:column headerText="Fecha de Inicio:">
+							    			<h:outputText value="#{vacante.dFechaInicio}">
+							    				<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>						    			
+										</p:column>
+						    			<p:column headerText="Fecha de Término:">
+							    			<h:outputText value="#{vacante.dFechaTermino}">
+							    				<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>							    		
+										</p:column>								    		
+							    			
+							    	</p:dataTable>				    			
+	
+									</h:panelGrid>
+									
+							        <p:commandButton value="Continuar" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>							
+	                         
+							</div>	
+								
+			    		</p:panel>		    		  		
+			    		
+				    </h:panelGroup>
+		
+			    </h:form>
+		    </h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</html>

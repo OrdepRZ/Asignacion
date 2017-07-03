@@ -1,0 +1,13 @@
+<!DOCTYPE dwr PUBLIC
+    "-//GetAhead Limited//DTD Direct Web Remoting 3.0//EN"
+    "http://directwebremoting.org/schema/dwr30.dtd">
+<dwr>
+	<init>
+		<creator id="jsf" class="org.directwebremoting.faces.JsfCreator" />
+	</init>
+	<allow>
+		<create creator="new" javascript="seriesDwr">
+			<param name="class" value="mx.gob.edomex.seduca.dgippe.sigdip.asignacion.bean.AsignacionReportesBean"/>
+		</create>
+	</allow>
+</dwr>

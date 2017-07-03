@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Consulta de Vacancia de Educación Básica</h2>
+	    
+	    <h:form id="seguimientoForm" style="width:100%">
+	    
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	
+	    	<h:panelGrid id="panelFiltros" style="width:100%">
+	    		
+	    		<h:panelGroup id="tpoReporte">
+	    			
+    				<h:panelGrid columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;width:100%" >
+		    			<h:outputLabel value="Subsistema"/>
+		    			<p:selectOneMenu value="#{segPlazasBean.idSubsistema}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segPlazasBean.lstSubsistema}" var="sub" itemLabel="#{sub.descItem}" itemValue="#{sub.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Función"/>
+		    			<p:selectOneMenu value="#{segPlazasBean.idFuncion}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segPlazasBean.lstFuncion}" var="sub" itemLabel="#{sub.descItem}" itemValue="#{sub.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Asignatura"/>
+		    			<p:selectOneMenu value="#{segPlazasBean.idAsignatura}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segPlazasBean.lstAsignatura}" var="eva" itemLabel="#{eva.descItem}" itemValue="#{eva.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<h:outputLabel value="Municipio"/>
+		    			<p:selectOneMenu value="#{segPlazasBean.idMunicipio}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItems value="#{segPlazasBean.lstMunicipio}" var="mpo" itemLabel="#{mpo.descItem}" itemValue="#{mpo.idItem}" />
+		    			</p:selectOneMenu>
+
+		    			<p:outputLabel value="CCT"/>
+		    			<p:inputText value="#{segPlazasBean.cct}" maxlength="10" size="15" />
+
+
+		    			<h:outputLabel value="Disponibilidad"/>
+		    			<p:selectOneMenu value="#{segPlazasBean.idDisponibilidad}" >
+		    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+		    				<f:selectItem itemLabel="Disponibles" itemValue="1"/>
+		    				<f:selectItem itemLabel="No Disponibles" itemValue="2"/>
+		    			</p:selectOneMenu>
+
+    				</h:panelGrid>
+
+			    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+			    		<p:commandButton value="Consultar" action="#{segPlazasBean.consultar}" icon="ui-icon-gear" 
+			    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+			    							update="panelFiltros"/>
+			    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+			    			<p:ajax event="click" update="panelFiltros" listener="#{segPlazasBean.limpiar}"></p:ajax>
+			    		</p:commandButton>
+			    	</h:panelGrid>
+	    			
+	    			<h:panelGroup rendered="#{not empty segPlazasBean.lstVacante}" >
+				        
+				        <p:dataTable id="dataVac" var="data" value="#{segPlazasBean.lstVacante}" 
+				        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+				        			  rowStyleClass="#{data.folio == '0' ? 'disponible' : 'ocupado'}" >
+				        			  
+				            <f:facet name="header">
+				            	<p:outputLabel>Plazas Vacantes</p:outputLabel>
+				            </f:facet>
+
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Id. vacante"/>
+				            	</f:facet>				            
+				                <h:outputText value="#{data.cve}" />
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Tipo vacante"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.tpoVacante}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Municipio"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.municipio}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Asignatura"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.asginatura}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Subsistema"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.descSubsistema}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Función"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.funcion}" />
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Plaza-Jornada"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.descTpoVacante}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Horas"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.horas}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="CCT"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.cmpCCT}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Nombre CCT"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.nomCCT}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Turno"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.turno}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Inicio"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.fechaInicio}"/>
+				            </p:column>				            
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Termino"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.fechaTermino}"/>
+				            </p:column>
+				            <p:column >
+				            	<f:facet name="header">
+				            		<h:outputText value="Disponible"/>
+				            	</f:facet>
+				                <h:outputText value="#{data.folio == '0' ? 'SI' : 'NO'}"/>
+				            </p:column>
+				            <p:column style="width:5%" exportable="false" >
+				            	<f:facet name="header">
+				            		<h:outputText value="Georef."/>
+				            	</f:facet>
+				            	<p:commandLink actionListener="#{segPlazasBean.marcarCCT(data)}" process="@this"
+				            					update=":seguimientoForm:panelGeoref" oncomplete="PF('gmapDialog').show();" >
+				            		<h:panelGroup styleClass="ui-icon ui-icon-tag" />
+				            	</p:commandLink>
+				            </p:column>
+				        </p:dataTable>
+
+						<p:dialog id="gmapDialog" widgetVar="gmapDialog" width="625" height="420" modal="true" appendTo="@(body)">
+							<h:panelGrid id="panelGeoref" style="width:100%">
+								<p:gmap id="gmap" center="#{segPlazasBean.centerMap}" zoom="12" type="HYBRID" style="width:600px;height:400px" model="#{segPlazasBean.simpleModel}" >
+									<p:ajax event="overlaySelect" listener="#{segPlazasBean.onMarkerSelect}" />
+									<p:gmapInfoWindow >
+										<p:outputPanel style="display:block;margin:auto; witdth:40%;">
+											<p:panelGrid columns="2" styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value" >
+												<p:outputLabel for="cct" value="CCT: "/>
+												<p:outputLabel id="cct" value="#{segPlazasBean.informacionCct.cct}" />
+												
+												<p:outputLabel for="nombreCCT" value="Nombre: "/>
+												<p:outputLabel id="nombreCCT" value="#{segPlazasBean.informacionCct.nombre}" />
+												
+												<p:outputLabel for="domicilio" value="Domicilio: "/>
+												<p:outputLabel id="domicilio" value="#{segPlazasBean.informacionCct.domicilio}" />
+												
+												<p:outputLabel for="municipio" value="Municipio: "/>
+												<p:outputLabel id="municipio" value="#{segPlazasBean.informacionCct.nombreMunicipio}" />
+												
+												<p:outputLabel for="montoInvInfo" value="Localidad: "/>
+												<p:outputLabel id="montoInvInfo" value="#{segPlazasBean.informacionCct.localidad}" />
+												
+												<p:outputLabel for="codigoPostal" value="Código Postal: "/>
+												<p:outputLabel id="codigoPostal" value="#{segPlazasBean.informacionCct.codigoPostal}" />
+												
+											</p:panelGrid>
+										</p:outputPanel>
+									</p:gmapInfoWindow>
+								</p:gmap>
+							</h:panelGrid>
+						</p:dialog>
+				        
+				        <p:panel header="Exportar" rendered="#{not empty segPlazasBean.lstVacante}">
+				            <h:commandLink>
+				                <p:graphicImage library="img" name="file_xls.png" />
+				                <p:dataExporter type="xls" 
+				                    target="dataVac" fileName="ListadoVacantes_XLS" postProcessor="#{consultaAtpBean.postProcesoXLS}" />
+				            </h:commandLink>
+				        </p:panel>
+
+	    			</h:panelGroup>
+
+	    		</h:panelGroup>
+
+	    	</h:panelGrid>
+
+	    	<pe:blockUI widgetVar="blockUIWidget1">
+	    		<h:panelGrid columns="1">
+	    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+	    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+	    		</h:panelGrid>	
+	    	</pe:blockUI>	    	
+	    </h:form>
+	    
+	</ui:define>
+</ui:composition>
+</html>

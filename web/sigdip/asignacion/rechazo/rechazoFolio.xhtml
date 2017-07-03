@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Rechazo de Folio de Educación Básica</h2>
+	    
+	    <h:panelGroup id="panelVista">
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	<h:panelGroup id="groupConsulta" rendered="#{rechazoFolioBean.bndConsulta}">
+	    		<h:form id="consultaForm" style="width:100%">
+	    			<h:panelGrid id="panelConsulta" style="width:100%">
+	    				<h:panelGrid id="detalleConsulta" columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<h:outputLabel value="Folio federal: *"/>
+			    			<p:inputText value="#{rechazoFolioBean.folio}" maxlength="12" size="15" />
+	    				</h:panelGrid>
+	    				
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Consultar" action="#{rechazoFolioBean.consultarFolio}" icon="ui-icon-gear" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update="panelConsulta"/>
+				    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update="panelConsulta" listener="#{rechazoFolioBean.limpiar}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+	    				
+		    			<h:panelGroup rendered="#{not empty rechazoFolioBean.lstAspirante}" >
+					        
+					        <p:dataTable id="dataAsp" var="data" value="#{rechazoFolioBean.lstAspirante}" 
+					        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+					        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Aspirante</p:outputLabel>
+					            </f:facet>
+	
+					            <p:column headerText="Folio">
+					                <h:outputText value="#{data.folioFederal}" />
+					            </p:column>
+					            <p:column headerText="CURP">
+					                <h:outputText value="#{data.curp}" />
+					            </p:column>
+					            <p:column headerText="Nombre">
+					                <h:outputText value="#{data.nombre}"/>
+					            </p:column>
+					            <p:column headerText="Tipo Convocatoria">
+					                <h:outputText value="#{data.tipoConvocatoria}"/>
+					            </p:column>
+					            <p:column headerText="Plaza">
+					                <h:outputText value="#{data.plaza}"/>
+					            </p:column>
+					            <p:column headerText="Prelación">
+					                <h:outputText value="#{data.prelac}"/>
+					            </p:column>
+					            <p:column headerText="Estatus">
+					                <h:outputText value="#{data.descStatus}"/>
+					            </p:column>
+					            
+					            <p:column headerText="" style="width:5%" rendered="#{(data.status == '1') or (data.status == '2')}">
+									<p:commandButton value="Rechazar" action="#{rechazoFolioBean.inicializarRechazo}" update=":panelVista" icon="ui-icon-folder-open" >
+										<f:setPropertyActionListener target="#{rechazoFolioBean.aspirante}" value="#{data}" />
+									</p:commandButton>
+					            </p:column>
+
+					            <p:column headerText="PDF" style="width:5%" rendered="#{data.status == '3'}">
+					            	<h:commandButton action="#{rechazoFolioBean.generarFormato}" image="../../../resources/img/pdf.png" title="Formato PDF">
+					            		<f:setPropertyActionListener target="#{rechazoFolioBean.aspiranteFormato}" value="#{data}" />
+					            	</h:commandButton>
+					            </p:column>
+					            
+					        </p:dataTable>
+		    			</h:panelGroup>
+
+	    			</h:panelGrid>
+	    			
+			    	<pe:blockUI widgetVar="blockUIWidget1">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+			    	
+	    		</h:form>
+	    	</h:panelGroup>
+	    	
+	    	<h:panelGroup id="groupRenuncia" rendered="#{rechazoFolioBean.bndRechazo}">
+	    		<h:form id="renunciaForm" style="width:100%">
+					<h:panelGrid id="panelRenuncia" style="width:100%">
+	    				<h:panelGrid id="detalleFolioRenuncia" columns="2" columnClasses="panelGrid-label,panelGrid-value"  
+	    								style="margin-top:20px;" styleClass="tablaIncidencias"  >
+			    			<h:outputLabel value="Folio federal "/>
+			    			<p:outputLabel value="#{rechazoFolioBean.aspirante.folioFederal}" />
+
+			    			<h:outputLabel value="Nombre "/>
+			    			<p:outputLabel value="#{rechazoFolioBean.aspirante.nombre}" />
+
+			    			<h:outputLabel value="CURP "/>
+			    			<p:outputLabel value="#{rechazoFolioBean.aspirante.curp}" />
+
+			    			<h:outputLabel value="Nivel o Asignatura "/>
+			    			<p:outputLabel value="#{rechazoFolioBean.aspirante.plaza}" />
+
+			    			<h:outputLabel value="Estatus "/>
+			    			<p:outputLabel value="#{rechazoFolioBean.aspirante.descStatus}" />
+
+	    				</h:panelGrid>
+	    				
+	    				<h:panelGrid id="motivoRenuncia" columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<h:outputLabel value="Motivo de rechazo: *"/>
+			    			<h:selectOneMenu value="#{rechazoFolioBean.idMotivoRechazo}" >
+			    				<f:selectItem itemLabel="--Selecciona--" itemValue="0"/>
+			    				<f:selectItems value="#{rechazoFolioBean.lstMotivoRechazo}" var="mvo" itemLabel="#{mvo.descItem}" itemValue="#{mvo.idItem}" />
+			    			</h:selectOneMenu>
+			    			<h:outputLabel value="Observación: *"/>
+							<h:panelGrid columns="1">
+								<p:inputTextarea value="#{rechazoFolioBean.observacionRechazo}" rows="4" cols="80" counter="contador0" maxlength="300" counterTemplate="{0} caracteres restantes." autoResize="false" />
+								<h:outputText id="contador0" styleClass="contador" />
+							</h:panelGrid>
+	    				</h:panelGrid>
+	
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Rechazar" icon="ui-icon-gear" onclick="PF('rechConfirmDlg').show();" update=":renunciaForm:panelRech"/>
+				    		<p:commandButton value="Cancelar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update=":panelVista" listener="#{rechazoFolioBean.regresarConsulta}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+				    	
+					</h:panelGrid>
+
+					<p:confirmDialog widgetVar="rechConfirmDlg" header="Confirmación" severity="alert" width="600" closable="false" >
+						<f:facet name="message">
+							<h:outputText value="Por favor, verifica los siguientes datos antes de continuar:" />
+							<h:panelGrid id="panelRech" style="width:100%;margin-top:20px;margin-bottom:20px;"  styleClass="tablaIncidencias" >
+								<h:panelGrid columns="4" columnClasses="panelGrid-label,panelGrid-value,panelGrid-label,panelGrid-value" >
+					    			<h:outputLabel value="Folio Federal "/>
+					    			<p:outputLabel value="#{rechazoFolioBean.aspirante.folioFederal}" />
+		
+					    			<h:outputLabel value="Nombre "/>
+					    			<p:outputLabel value="#{rechazoFolioBean.aspirante.nombre}" />
+
+					    			<h:outputLabel value="Nivel o Asignatura "/>
+					    			<p:outputLabel value="#{rechazoFolioBean.aspirante.plaza}" />
+		
+					    			<h:outputLabel value="Estatus "/>
+					    			<p:outputLabel value="#{rechazoFolioBean.aspirante.descStatus}" />
+
+								</h:panelGrid>
+								<h:panelGrid columns="2" columnClasses="panelGrid-label,panelGrid-value" >
+					    			<h:outputLabel value="Motivo de rechazo "/>
+					    			<h:selectOneMenu value="#{rechazoFolioBean.idMotivoRechazo}" disabled="true" >
+					    				<f:selectItem itemLabel="--Selecciona--" itemValue="0"/>
+					    				<f:selectItems value="#{rechazoFolioBean.lstMotivoRechazo}" var="mvo" itemLabel="#{mvo.descItem}" itemValue="#{mvo.idItem}" />
+					    			</h:selectOneMenu>
+					    			
+					    			<h:outputLabel value="Observación "/>
+					    			<p:outputLabel value="#{rechazoFolioBean.observacionRechazo}" />
+																				
+								</h:panelGrid>
+							</h:panelGrid>
+							
+							<h:outputText value="¿Deseas continuar?" />
+						</f:facet>
+						<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+					    	<p:commandButton value="Continuar" action="#{rechazoFolioBean.registrarRechazo}" update=":panelVista"  onclick="PF('rechConfirmDlg').hide();" />
+					    	<p:commandButton value="Verificar" onclick="PF('rechConfirmDlg').hide();" />
+					    </h:panelGrid>							    
+					</p:confirmDialog>
+
+			    	<pe:blockUI widgetVar="blockUIWidget3">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+
+	    		</h:form>	    	
+	    	</h:panelGroup>
+
+	    </h:panelGroup>
+	</ui:define>
+</ui:composition>
+</html>

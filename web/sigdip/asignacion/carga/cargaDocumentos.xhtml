@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+		    <h2>Carga de documentos</h2>
+		    
+		    <h:panelGroup id="panelVista">
+		    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+		    	<h:panelGroup id="groupConsulta">
+		    		<h:form id="consultaForm" style="width:100%">
+		    			<h:panelGrid id="consulta" columns="3" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<h:outputLabel value="CURP: *"/>
+			    			<p:inputText value="#{cargaDocumentosBean.curp}" maxlength="18" size="20" />
+			    			
+			    			<p:commandButton value="Consultar" action="#{cargaDocumentosBean.consultarCurp}" icon="ui-icon-gear" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update="cargaDocumentos"/>
+	    				</h:panelGrid>
+	    				
+	    				<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		
+				    	</h:panelGrid>
+	    				
+	    				<p:outputPanel id="cargaDocumentos">
+	    					<h:panelGrid columns="1" rendered="#{cargaDocumentosBean.showCargaArchivo}">
+	    						<h:panelGrid columns="2">
+	    							<h:outputLabel value="Nombre:" />
+		    						<h:outputLabel value="#{cargaDocumentosBean.aspirante.nombre}" />
+		    						
+		    						<h:outputLabel value="Primer Apellido:" />
+		    						<h:outputLabel value="#{cargaDocumentosBean.aspirante.primerApellido}" />
+		    						
+		    						<h:outputLabel value="Segundo Apellido:" />
+		    						<h:outputLabel value="#{cargaDocumentosBean.aspirante.segundoApellido}" />
+	    						</h:panelGrid>
+	    						
+	    						<br></br>
+	    						<br></br>
+	    						
+	    						<h:panelGrid columns="4">
+	    							<h:outputLabel value="cargar Archivos:" />
+			    					<p:fileUpload fileUploadListener="#{cargaDocumentosBean.uploadfile}" mode="advanced" dragDropSupport="false"  
+										multiple="true" sizeLimit="500000" fileLimit="3" allowTypes="/(\.|\/)(pdf)$/" 
+										cancelLabel="Cancelar" label="Seleccionar" uploadLabel="Subir" invalidFileMessage="*** Tipo de archivo invalido, favor de verificar"
+										invalidSizeMessage="*** El Tamaño de archivo excede el tamaño permitido, favor de verificar" />
+						            
+						            <h:inputHidden />
+						            <p:commandButton value="Guardar" action="#{cargaDocumentosBean.guardarDocumentos}" icon="ui-icon-gear" 
+						    			onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+						    			update="cargaDocumentos, consulta"/>
+	    						</h:panelGrid>
+		    				</h:panelGrid>
+	    				</p:outputPanel>
+	    				
+		    			
+		    		</h:form>
+		    	</h:panelGroup>
+		    </h:panelGroup>
+		</ui:define>
+	</ui:composition>
+</html>

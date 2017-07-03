@@ -1,0 +1,374 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Reporte de Asignación Educación Básica</h2>
+	    
+	    <h:panelGroup id="panelVista">
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	
+	    	<h:panelGroup id="groupConsulta" rendered="#{rptAsignacionBean.bndConsulta}">
+	    		<h:form id="formConsulta" >
+	    			<h:panelGrid id="panelConsulta" style="width:100%">
+
+	    				<h:panelGrid columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px" >
+			    			<p:outputLabel value="Convocatoria *"/>
+			    			<p:selectOneMenu value="#{rptAsignacionBean.idConvocatoria}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptAsignacionBean.lstConvocatoria}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Subsistema"/>
+			    			<p:selectOneMenu value="#{rptAsignacionBean.idSubsistema}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptAsignacionBean.lstSubsistema}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Tipo de Reporte"/>
+			    			<p:selectOneMenu id="selectReporte" value="#{rptAsignacionBean.idReporte}" >
+			    				<p:ajax listener="#{rptAsignacionBean.enCambioDeReporte}" update="selectFuncion, selectAsignatura" />
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItem itemLabel="1 - Ingreso" itemValue="1"/>
+			    				<f:selectItem itemLabel="2 - Promoción" itemValue="2"/>
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel  value="Función"/>
+			    			<p:selectOneMenu id="selectFuncion" value="#{rptAsignacionBean.idFuncion}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptAsignacionBean.lstFuncion}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Asignatura"/>
+			    			<p:selectOneMenu id="selectAsignatura" value="#{rptAsignacionBean.idAsignatura}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptAsignacionBean.lstAsignatura}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Fecha de inicial"/>
+			    			<p:calendar value="#{rptAsignacionBean.fecInicial}" locale="es" pattern="dd/MM/yyyy" showOn="button" />
+	
+			    			<p:outputLabel value="Fecha de final"/>
+			    			<p:calendar value="#{rptAsignacionBean.fecFinal}" locale="es" pattern="dd/MM/yyyy" showOn="button" />
+	
+			    			<p:outputLabel value="CCT"/>
+			    			<p:inputText value="#{rptAsignacionBean.cct}" maxlength="10" size="15" />
+	
+	    				</h:panelGrid>
+	
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Consultar" action="#{rptAsignacionBean.consultar}" icon="ui-icon-gear" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update="panelConsulta"/>
+				    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update="panelConsulta" listener="#{rptAsignacionBean.limpiar}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+		    			
+		    			<h:panelGroup style="margin-top:20px" rendered="#{not empty rptAsignacionBean.lstCifra}" >
+							<h:panelGroup>
+						        <p:dataTable id="dataCifra" var="data" value="#{rptAsignacionBean.lstCifra}" 
+						        			  emptyMessage="No se encontrarón registros."  
+						        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+						        			  
+						            <f:facet name="header">
+						            	<p:outputLabel>Resumen de Asignación</p:outputLabel>
+						            </f:facet>
+		
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Función"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.funcion}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Cve. Asignatura"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.cveAsignatura}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Asignatura"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.asignatura}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Estatal"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.totEstatal}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Federalizado"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.totFederal}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Total"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.total}"/>
+						            </p:column>
+						            
+						            <f:facet name="footer">
+						            	<p:commandButton value="Detalle de Asignación" action="#{rptAsignacionBean.consultarDetalle}" icon="ui-icon-calculator" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update=":panelVista"/>
+						            </f:facet>
+						        </p:dataTable>
+		
+						        <p:panel header="Exportar" rendered="#{not empty rptAsignacionBean.lstCifra}">
+						            <h:commandLink>
+						                <p:graphicImage library="img" name="file_xls.png" />
+						                <p:dataExporter type="xls" 
+						                    target="dataCifra" fileName="SIAPRODEM-ResumenAsignación" postProcessor="#{rptAsignacionBean.postProcesoXLS}" />
+	
+						            </h:commandLink>
+						        </p:panel>
+						        
+						        <p:chart type="pie" model="#{rptAsignacionBean.graficaTotal}" 
+				    					style="width:550px;height:350px;font-weight:bold;color:black;" />
+				    					
+								<p:chart type="bar" model="#{rptAsignacionBean.graficaDetalle}" rendered="#{rptAsignacionBean.muestraGrafica}" 
+									style="width:550px;height:350px;font-weight:bold;color:black;" />
+					    		
+					    		<p:chart type="line" model="#{rptAsignacionBean.graficaLineas}" rendered="#{!rptAsignacionBean.muestraGrafica}" 
+					    			style="width:100%;height:550px;font-weight:bold;color:black;" />
+
+					        </h:panelGroup>
+		    			</h:panelGroup>
+		    			
+	    			</h:panelGrid>
+	    			
+			    	<pe:blockUI widgetVar="blockUIWidget1">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>	    	
+
+	    		</h:form>
+	    	</h:panelGroup>
+
+	    	<h:panelGroup id="groupDetalle" rendered="#{rptAsignacionBean.bndDetalle}" >
+	    		<h:form id="formDetalle" >
+	    			<h:panelGrid id="panelDetalle" style="width:100%">
+
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Regresar" action="#{rptAsignacionBean.regresarConsulta}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+				    	</h:panelGrid>
+
+		    			<h:panelGroup style="margin-top:20px;" rendered="#{not empty rptAsignacionBean.lstAspirante}" >
+		    				
+
+					        <p:panel header="Exportar" rendered="#{not empty rptAsignacionBean.lstAspirante}">
+					            <h:commandLink>
+					                <p:graphicImage library="img" name="file_xls.png" />
+					                <p:dataExporter type="xls" 
+					                    target="dataAsp" fileName="SIAPRODEM-DetalleAsignación" postProcessor="#{rptAsignacionBean.postProcesoXLS}" />
+					            </h:commandLink>
+					        </p:panel>
+					        
+					        <p:dataTable id="dataAsp" var="data" value="#{rptAsignacionBean.lstAspirante}" 
+					        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+					        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Detalle de Asignación</p:outputLabel>
+					            </f:facet>
+	
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Folio Federal"/>
+					            	</f:facet>					            					            
+					                <h:outputText value="#{data.folioFederal}" />
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="CURP"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.curp}" />
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Nombre"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.nombre}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Tipo Convocatoria"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.tipoConvocatoria}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Función"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.funcion}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Asignatura"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.plaza}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Grupo Desempeño"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.gpoDesmo}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Prelación"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.prelac}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Estatus"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.descStatus}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Id. Vacante"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.cve}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Función"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.funcion}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Tipo Vacante"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.tpoVacante}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Cve. Asignatura"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.cveAsignatura}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Pza. Jornada"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.pzajornada}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Horas"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.horas}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Fec. Inicio"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.fechaInicio}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Fec. Termino"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.fechaTermino}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="CCT"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.cmpCCT}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Nombre CCT"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.nomCCT}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Turno"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.turno}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Cve. Mpo."/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.cveMun}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Municipio"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.municipio}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Subsistema"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.descSubsistema}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Fec. Asignación"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.fecAsignacion}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Cve. Nombramiento"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.motivoVacante}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Cve. Presupuestal"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.vacanteAsignada.cvePresupuestal}"/>
+					            </p:column>
+					        </p:dataTable>
+
+					    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+					    		<p:commandButton value="Regresar" action="#{rptAsignacionBean.regresarConsulta}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+					    	</h:panelGrid>
+	
+						</h:panelGroup>
+	    			
+	    			</h:panelGrid>	    		
+	    		</h:form>	    	
+	    	</h:panelGroup>
+	    	
+	    </h:panelGroup>
+	    
+	    <script type="text/javascript">
+			function extenderPie() {
+			    this.cfg.seriesDefaults.rendererOptions.dataLabelFormatString = '%.5s%';
+			    this.cfg.seriesDefaults.rendererOptions.dataLabelThreshold = 0;
+			}
+
+			function extenderBar(){
+				this.cfg.seriesDefaults.rendererOptions = {
+				        barWidth : 30
+				};
+			}
+		</script>	    
+
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+			<div id="body_main">
+			    <h:form id="formMapa" style="width:100%">
+			    	<p:outputPanel id="mapa" rendered="#{not empty georefPlazasMSBean.municipios}">
+			    		 <h2>Consulta
+					    	<h:outputLabel value="#{georefPlazasMSBean.nomMunicipio}" />
+					    </h2>
+					    
+					    <h:panelGrid columns="2">
+					    	<p:gmap center="#{georefPlazasMSBean.centroMapa}" model="#{georefPlazasMSBean.mapModel}" zoom="10" type="ROADMAP" style="width:900px;height:700px" />
+			    		
+				    		<p:dataTable value="#{georefPlazasMSBean.asignaturas}" var="asignatura">
+				    			<p:column headerText="Icono">
+			    					<p:graphicImage value="/resources/img/marcas_mapa/#{asignatura.nombreIcono}" />
+			    				</p:column>
+			    				
+			    				<p:column headerText="Subsistema">
+			    					<h:outputLabel value="#{asignatura.descSubsistema}" />
+			    				</p:column>
+				    		</p:dataTable>
+					    </h:panelGrid>
+			    		
+						<p:poll interval="5" listener="#{georefPlazasMSBean.getPlazas}" update="mapa" widgetVar="poll" />
+						<br></br>
+						<p:commandButton type="button" value="Continuar" icon="ui-icon-play" onclick="PF('poll').start()" />  
+	    				<p:commandButton type="button" value="Pausar" icon="ui-icon-pause" onclick="PF('poll').stop()" />
+			    	</p:outputPanel>
+			    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+			    </h:form>
+		    </div>
+		</ui:define>
+	</ui:composition>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+	    	<h2>Reporte de Citas de Educación Básica</h2>
+	    	
+	    	<h:form id="formAlta">
+	    	<p:messages id="message" autoUpdate="true" closable="true"/>
+	    		<p:panelGrid rendered="#{citaBean.banPanelConsulta}" columns="4" layout="grid" style="width:auto; margin:0px;padding:0px" >
+					
+					<p:outputLabel value="  Fecha:"  />
+    				<p:calendar styleClass="alignRight" id="event5" value="#{citaBean.fecha}">
+          					<p:ajax event="dateSelect" listener="#{citaBean.onDateSelect}" required="true" />
+      				</p:calendar>
+      				
+      				<p:outputLabel value="Función :"  />
+      				<p:selectOneMenu id="funcion" value="#{citaBean.funcion}" style="width:180px">
+						<f:selectItem  itemValue="1" itemLabel="Ingreso"/>
+						<f:selectItem  itemValue="2" itemLabel="Promoción"/>
+					</p:selectOneMenu>
+      				    				
+    				<p:commandButton value="Consultar"  action = "#{citaBean.consultaCitas}" update=":formAlta message" icon="ui-icon-gear" onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"/>
+	    		</p:panelGrid>
+
+		    	<p:outputPanel rendered="#{citaBean.banPanelCita}" >
+		    		<p:panelGrid columns="3" layout="grid" style="width:40%;" >
+			    		<p:commandButton value="Regresar"  action = "#{navegacionBean.asgRptCita}" update=":formAlta message" icon="ui-icon-arrowreturn-1-w"
+	    								 onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()" style="align:left;"/>
+	    				<p:outputLabel value="Ciclo escolar:" style="font-weight:bold" />
+	    				<p:inputText value="#{citaBean.ciclo}"/>
+    				</p:panelGrid>
+    				<p:dataTable id="citas" value="#{citaBean.citas}" rowIndexVar="index" var="cita"  rendered="#{not empty citaBean.citas}"  paginator="true" rows="10" paginatorPosition="bottom" styleClass="tablaIncidencias">
+    					<f:facet name="header"> Lista de Asistencia</f:facet>
+    					<p:column headerText="NP">
+    						<p:outputLabel value="#{index+1}"  />
+    					</p:column>
+    					<p:column headerText="FolioFederal">
+    						<p:outputLabel value="#{cita.folioFederal}"  />
+    					</p:column>
+    					
+    					<p:column headerText="Tipo de Convocatoria">
+    						<p:outputLabel value="#{cita.tipoConvocatoria}"  />
+    					</p:column>
+    					
+    					<p:column headerText="#{citaBean.exp}">
+    						<p:outputLabel value="#{cita.nomTexn}"  />
+    					</p:column>
+    					
+    					<p:column headerText="CURP:"  >
+    						<p:outputLabel value="#{cita.curp}"  />
+    					</p:column>
+    					
+    					<p:column headerText="  Nombre:"  >
+    						<p:outputLabel value="#{cita.nombre}"  />
+    					</p:column>
+    					
+    					<p:column headerText="Gpo. Desemp:"  >
+    						<p:outputLabel value="#{cita.gpoDesmo}" disabled="true" />
+    					</p:column>
+    					
+    					<p:column headerText="Prelación:"  >
+    						<p:outputLabel value="#{cita.prelac}" disabled="true" />
+    					</p:column>
+    					
+    					<p:column headerText="  Fecha:" >
+    						<p:outputLabel value="#{cita.fechaAplicacion}" disabled="true" />
+    					</p:column>
+      					
+      					<p:column headerText=" Hora:"  >
+      						<p:outputLabel value="#{cita.plaza}" disabled="true" />
+                 		</p:column>	
+                 		
+    				</p:dataTable>   		
+    				
+				    <p:panel header="Exportar" >
+	    				<h:commandLink id="pdf" action = "#{citaBean.generaLista}">
+						        <p:graphicImage name="img/file_pdf.png" />
+	    				</h:commandLink>  
+				    </p:panel>    						
+    				 					
+		    	</p:outputPanel>	    		    	
+		    	
+	    	</h:form> 
+	    	
+		</ui:define>
+ 	</ui:composition>
+</html>

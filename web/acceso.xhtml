@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+
+</h:head>
+
+<ui:composition template="/WEB-INF/plantillas/plantillaLoggeo.xhtml">
+	<ui:define name="content">	
+	    <h:form>
+	    	<p:panel styleClass="login">
+		    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+		    	<h:panelGrid columns="2" cellpadding="5">
+		    		<f:facet name="header">
+		    			<h:graphicImage library="img" name="key2.jpg" style="margin: 0 auto; vertical-align: middle;"/>
+		    		</f:facet>
+		    		
+		    		<h:outputLabel for="usuario" value="Usuario: *" />
+		    		<p:inputText id="usuario" value="#{accesoBean.usuario}" />
+		    		
+		    		<h:outputLabel for="contrasena" value="Contraseña: *" />
+		    		<p:password id="contrasena" value="#{accesoBean.password}" />
+		    		
+		    		<f:facet name="footer">
+		    			<p:commandButton value="Ingresar" action="#{accesoBean.validarAcceso}" 
+		    					onstart="PF('blockUIWidget').block()" oncomplete="PF('blockUIWidget').unblock()"
+		    					style="margin: 0 auto;" />
+		    		</f:facet>
+		    	</h:panelGrid>
+	    	</p:panel>
+
+	    	<pe:blockUI widgetVar="blockUIWidget" css="{top: '10px', left: '', right: '10px', cursor: 'wait'}" centerY="false" >
+	    		<h:panelGrid columns="1">
+	    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+	    			<h:outputText value="Verificando credenciales ..." style="white-space: nowrap;"/>
+	    		</h:panelGrid>	
+	    	</pe:blockUI>
+	    </h:form>
+	</ui:define>
+</ui:composition>
+</html>

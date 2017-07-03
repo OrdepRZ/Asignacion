@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+		<ui:define name="content">
+	    	<h2>Citas de Media Superior</h2>
+	    	
+	    	<h:form id="formAlta">
+	    	<p:messages id="message" autoUpdate="true" closable="true"/>
+	    	
+	    		<h:panelGroup id="groupConsulta" rendered="#{citaBeanMS.banPanelConsulta}">
+	    		<br></br>
+		    		<h:panelGrid  columns="3" >
+	   					<p:outputLabel value="Folio Federal: *"  />
+	   					<p:inputText value="#{citaBeanMS.folio}" maxlength="12" size="15" />
+	    				
+	    				<p:commandButton value="Consultar" action="#{citaBeanMS.consultaFolioMS}" update=":formAlta message" 
+	    					icon="ui-icon-gear" onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"/>
+		    		</h:panelGrid>
+	    		</h:panelGroup>
+
+				<pe:blockUI widgetVar="blockUIWidget1">
+					<h:panelGrid columns="1">
+						<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+						<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+					</h:panelGrid>	
+				</pe:blockUI>	 
+				
+				<h:panelGroup id="panelConsulta" rendered="#{citaBeanMS.banPanelCita}">
+			 		<br></br>	    			    		
+			    	<p:panel header="Datos de la nueva cita" >
+			    		<p:panelGrid columns="4" style="width:100%">
+			    		
+	    					<p:outputLabel value="Folio/CURP:"  style="font-weight:bold"/>
+	    					<p:selectOneMenu id="folios" value="#{citaBeanMS.curp}" valueChangeListener="#{citaBeanMS.valueChanged}" onchange="submit()">
+								<f:selectItems value="#{citaBeanMS.folios}" var ="asp" itemValue="#{asp.curp}" itemLabel="#{asp.folioFederal}:#{asp.curp}:"/>
+							</p:selectOneMenu>
+	    					
+	    					<p:outputLabel value="  Tipo de Convocatoria:"  style="font-weight:bold"/>
+	    					<p:outputLabel value="#{citaBeanMS.asp.tipoConvocatoria}" />
+	    					
+	    					<p:outputLabel value="  Asignatura:" style="font-weight:bold" />
+	    					<p:outputLabel value="#{citaBeanMS.asp.nomTexn}" />
+	    					
+	    					<p:outputLabel value="CURP:"  style="font-weight:bold"/>
+	    					<p:outputLabel value="#{citaBeanMS.asp.curp}" />
+	    					
+	    					<p:outputLabel value="  Nombre:"  style="font-weight:bold"/>
+	    					<p:outputLabel value="#{citaBeanMS.asp.nombre}" />
+	    					
+	    					<p:outputLabel value="Gpo. Desempeño:"  style="font-weight:bold"/>
+	    					<p:outputLabel value="#{citaBeanMS.asp.gpoDesmo}" />
+	    					
+	    					<p:outputLabel value="  Fecha:"  style="font-weight:bold"/>
+	    					<p:calendar styleClass="alignRight" id="event5" value="#{citaBeanMS.fecha}" locale="es" showOn="button" required="true" requiredMessage="Favor de ingresar la fecha.">
+	          						<p:ajax event="dateSelect" listener="#{citaBeanMS.onDateSelect}"  />
+	      					</p:calendar>	    					
+	    					
+	    					<p:outputLabel value="Prelación:" style="font-weight:bold" />
+	    					<p:outputLabel value="#{citaBeanMS.asp.prelac}" />
+	      					
+	      					<p:outputLabel value=" Hora:" style="font-weight:bold" />
+	      					<pe:timePicker value="#{citaBeanMS.hora}" mode="spinner" widgetVar="spinnerBtnTimeWidget"  
+	                 					showOn="button" label="Spinner time picker with button" required="true" requiredMessage="Favor de ingresar la hora."/>
+			
+						</p:panelGrid>
+						
+						<br></br>
+						
+						<div class="buttons"  align="left">
+	                 		<p:commandButton value="Registrar" actionListener="#{citaBeanMS.insertaCita}" update=":formAlta message" icon="ui-icon-gear">
+	        					<p:confirm header="Confirmación" message="¿Quiere registrar la cita?" icon="ui-icon-alert" />
+	    					</p:commandButton>
+	    					<p:commandButton value="Regresar"  action = "#{navegacionBean.asgRegCitaMS}" update=":formAlta message" icon="ui-icon-arrowreturn-1-w"
+	    								 onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()" style="align:left;"/>
+	    					
+	       					<p:confirmDialog  widgetVar="confirmDialog" global="true" showEffect="fade" hideEffect="fade"  >
+				        		<p:commandButton value="Si"  type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        		<p:commandButton value="No"  type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    		</p:confirmDialog>						
+						</div>
+			    	</p:panel>		    		  		
+			    		
+				</h:panelGroup>	
+				
+	    	</h:form> 
+	    	
+		</ui:define>
+ 	</ui:composition>
+</html>

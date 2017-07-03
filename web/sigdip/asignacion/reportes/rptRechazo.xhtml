@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Reporte de Rechazo Educación Básica</h2>
+	    
+	    <h:panelGroup id="panelVista">
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	
+	    	<h:panelGroup id="groupConsulta" rendered="#{rptRechazoBean.bndConsulta}">
+	    		<h:form id="formConsulta" >
+	    			<h:panelGrid id="panelConsulta" style="width:100%">
+
+	    				<h:panelGrid columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;width:100%" >
+			    			<p:outputLabel value="Convocatoria *"/>
+			    			<p:selectOneMenu value="#{rptRechazoBean.idConvocatoria}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptRechazoBean.lstConvocatoria}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel  value="Tipo de Rechazo"/>
+			    			<p:selectOneMenu id="selectRechazo" value="#{rptRechazoBean.idRechazo}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptRechazoBean.lstRechazo}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Tipo de Reporte"/>
+			    			<p:selectOneMenu id="selectReporte" value="#{rptRechazoBean.idReporte}" >
+			    				<p:ajax listener="#{rptRechazoBean.enCambioDeReporte}" update="selectFuncion, selectSubsistema, selectAsignatura" />
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItem itemLabel="1 - Ingreso" itemValue="1"/>
+			    				<f:selectItem itemLabel="2 - Promoción" itemValue="2"/>
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel  value="Función"/>
+			    			<p:selectOneMenu id="selectFuncion" value="#{rptRechazoBean.idFuncion}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptRechazoBean.lstFuncion}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Subsistema"/>
+			    			<p:selectOneMenu id="selectSubsistema" value="#{rptRechazoBean.idSubsistema}" disabled="#{!rptRechazoBean.bSubsistema}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptRechazoBean.lstSubsistema}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Asignatura"/>
+			    			<p:selectOneMenu id="selectAsignatura" value="#{rptRechazoBean.idAsignatura}" >
+			    				<f:selectItem itemLabel="--Todo--" itemValue="0"/>
+			    				<f:selectItems value="#{rptRechazoBean.lstAsignatura}" var="cat" itemLabel="#{cat.descItem}" itemValue="#{cat.idItem}" />
+			    			</p:selectOneMenu>
+	
+			    			<p:outputLabel value="Fecha de inicial: "/>
+			    			<p:calendar value="#{rptRechazoBean.fecInicial}" locale="es" pattern="dd/MM/yyyy" showOn="button" />
+	
+			    			<p:outputLabel value="Fecha de final: "/>
+			    			<p:calendar value="#{rptRechazoBean.fecFinal}" locale="es" pattern="dd/MM/yyyy" showOn="button" />
+	
+	    				</h:panelGrid>
+	
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Consultar" action="#{rptRechazoBean.consultar}" icon="ui-icon-gear" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update="panelConsulta"/>
+				    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update="panelConsulta" listener="#{rptRechazoBean.limpiar}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+		    			
+		    			<h:panelGroup style="margin-top:20px;" rendered="#{not empty rptRechazoBean.lstCifra}" >
+							<h:panelGroup>
+						        <p:dataTable id="dataCifra" var="data" value="#{rptRechazoBean.lstCifra}" 
+						        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+						        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+						        			  
+						            <f:facet name="header">
+						            	<p:outputLabel>Resumen de Rechazos</p:outputLabel>
+						            </f:facet>
+		
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Función"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.funcion}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Cve. Asignatura"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.cveAsignatura}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Asignatura"/>
+						            	</f:facet>
+						                <h:outputText value="#{data.asignatura}" />
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Renuncia"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.tot2}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="No Presentados"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.tot4}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Documentación"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.tot9}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Negativa Firma"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.tot14}"/>
+						            </p:column>
+						            <p:column >
+						            	<f:facet name="header">
+						            		<h:outputText value="Total"/>
+						            	</f:facet>					            
+						                <h:outputText value="#{data.total}"/>
+						            </p:column>
+						            <f:facet name="footer">
+						            	<p:commandButton value="Detalle de Rechazo" action="#{rptRechazoBean.consultarDetalle}" icon="ui-icon-calculator" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update=":panelVista"/>
+						            	
+						            </f:facet>
+						        </p:dataTable>
+		
+						        <p:panel header="Exportar" rendered="#{not empty rptRechazoBean.lstCifra}">
+						            <h:commandLink>
+						                <p:graphicImage library="img" name="file_xls.png" />
+						                <p:dataExporter type="xls" 
+						                    target="dataCifra" fileName="SIAPRODEM-ResumenRechazo" postProcessor="#{rptRechazoBean.postProcesoXLS}" />
+	
+						            </h:commandLink>
+						        </p:panel>
+					        </h:panelGroup>
+		    			</h:panelGroup>
+		    			
+	    			</h:panelGrid>
+	    			
+			    	<pe:blockUI widgetVar="blockUIWidget1">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>	    	
+
+	    		</h:form>
+	    	</h:panelGroup>
+
+	    	<h:panelGroup id="groupDetalle" rendered="#{rptRechazoBean.bndDetalle}" >
+	    		<h:form id="formDetalle" >
+	    			<h:panelGrid id="panelDetalle" style="width:100%">
+
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Regresar" action="#{rptRechazoBean.regresarConsulta}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+				    	</h:panelGrid>
+
+		    			<h:panelGroup style="margin-top:20px;" rendered="#{not empty rptRechazoBean.lstAspirante}" >
+
+					        <p:panel header="Exportar" rendered="#{not empty rptRechazoBean.lstAspirante}">
+					            <h:commandLink>
+					                <p:graphicImage library="img" name="file_xls.png" />
+					                <p:dataExporter type="xls" 
+					                    target="dataAsp" fileName="SIAPRODEM-DetalleRechazo" postProcessor="#{rptRechazoBean.postProcesoXLS}" />
+					            </h:commandLink>
+					        </p:panel>
+					        
+					        <p:dataTable id="dataAsp" var="data" value="#{rptRechazoBean.lstAspirante}" 
+					        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+					        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Detalle de Rechazos</p:outputLabel>
+					            </f:facet>
+	
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Folio Federal"/>
+					            	</f:facet>					            					            
+					                <h:outputText value="#{data.folioFederal}" />
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="CURP"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.curp}" />
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Nombre"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.nombre}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Tipo Convocatoria"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.tipoConvocatoria}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Función"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.funcion}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Asignatura"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.plaza}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Grupo Desempeño"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.gpoDesmo}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Prelación"/>
+					            	</f:facet>
+					                <h:outputText value="#{data.prelac}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Estatus"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.descStatus}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Id. Rechazo"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.motivoRechazo.idMotivo}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Motivo Rechazo"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.motivoRechazo.descMotivo}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Fecha Rechazo"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.motivoRechazo.fecRechazo}"/>
+					            </p:column>
+					            <p:column >
+					            	<f:facet name="header">
+					            		<h:outputText value="Observación"/>
+					            	</f:facet>
+					            	<h:outputText value="#{data.motivoRechazo.observacion}"/>
+					            </p:column>
+					        </p:dataTable>
+
+					    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+					    		<p:commandButton value="Regresar" action="#{rptRechazoBean.regresarConsulta}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+					    	</h:panelGrid>
+	
+						</h:panelGroup>
+	    			
+	    			</h:panelGrid>	    		
+	    		</h:form>	    	
+	    	</h:panelGroup>
+	    	
+	    </h:panelGroup>
+	    	    
+	</ui:define>
+</ui:composition>
+</html>

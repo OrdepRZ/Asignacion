@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+	    <h2>Asignación de Plazas de Educación Básica</h2>
+	    
+	    <h:panelGroup id="panelVista">
+	    	<p:messages id="messages" autoUpdate="true" closable="true"/>
+	    	<h:panelGroup id="groupConsulta" rendered="#{asignacionFolioBean.bndConsulta}">
+	    		<h:form id="consultaForm" style="width:100%">
+	    			<h:panelGrid id="panelConsulta" style="width:100%">
+	    				<h:panelGrid id="detalleConsulta" columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<h:outputLabel value="Folio federal: *"/>
+			    			<p:inputText value="#{asignacionFolioBean.folio}" maxlength="12" size="15" />
+	    				</h:panelGrid>
+	    				
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Consultar" action="#{asignacionFolioBean.consultarFolio}" icon="ui-icon-gear" 
+				    							onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()"
+				    							update="panelConsulta"/>
+				    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update="panelConsulta" listener="#{asignacionFolioBean.limpiar}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+	    				
+		    			<h:panelGroup rendered="#{not empty asignacionFolioBean.lstAspirante}" >
+					        
+					        <p:dataTable id="dataAsp" var="data" value="#{asignacionFolioBean.lstAspirante}" 
+					        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+					        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Aspirante</p:outputLabel>
+					            </f:facet>
+	
+					            <p:column headerText="Folio">
+					                <h:outputText value="#{data.folioFederal}" />
+					            </p:column>
+					            <p:column headerText="CURP">
+					                <h:outputText value="#{data.curp}" />
+					            </p:column>
+					            <p:column headerText="Nombre">
+					                <h:outputText value="#{data.nombre}"/>
+					            </p:column>
+					            <p:column headerText="Función">
+					                <h:outputText value="#{data.funcion}"/>
+					            </p:column>
+					            <p:column headerText="Plaza">
+					                <h:outputText value="#{data.plaza}"/>
+					            </p:column>
+					            <p:column headerText="Prelación">
+					                <h:outputText value="#{data.prelac}"/>
+					            </p:column>
+					            <p:column headerText="Estatus">
+					                <h:outputText value="#{data.descStatus}"/>
+					            </p:column>
+					            
+					            <p:column  style="width:20px" rendered="#{(data.status == '1') and (loginBean.usuario.lstPermiso.contains('funAsgAsignacion'))}">
+									<p:commandLink title="Buscar Vacantes" action="#{asignacionFolioBean.inicializarAsignacion}" update=":panelVista" >
+										<h:panelGroup styleClass="ui-icon ui-icon-search" />
+										<f:setPropertyActionListener target="#{asignacionFolioBean.aspirante}" value="#{data}" />
+									</p:commandLink>					            
+					            </p:column>
+
+					            <p:column  style="width:20px" rendered="#{(data.status == '2')}">
+									<p:commandLink title="Nombramientos" action="#{asignacionFolioBean.buscarNombramientos}" update=":panelVista" >
+										<h:panelGroup styleClass="ui-icon ui-icon-document" />
+										<f:setPropertyActionListener target="#{asignacionFolioBean.aspirante}" value="#{data}" />
+									</p:commandLink>					            
+					            </p:column>
+					            
+					            <p:column headerText="PDF" style="width:5%" rendered="#{(data.status == '3')}">
+					            	<h:commandButton action="#{asignacionFolioBean.generarFormato}" image="../../../resources/img/pdf.png" title="Formato PDF"
+					            						onstart="PF('blockUIWidget1').block()" oncomplete="PF('blockUIWidget1').unblock()" >
+					            		<f:setPropertyActionListener target="#{asignacionFolioBean.aspiranteFormato}" value="#{data}" />
+					            		<f:setPropertyActionListener target="#{asignacionFolioBean.formato}" value="OTRO" />
+					            	</h:commandButton>
+					            </p:column>
+						            
+					            <f:facet name="footer">
+					            </f:facet>
+					        </p:dataTable>
+		    			</h:panelGroup>
+
+	    			</h:panelGrid>
+	    			
+			    	<pe:blockUI widgetVar="blockUIWidget1">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+			    	
+	    		</h:form>
+	    	</h:panelGroup>
+	    	
+	    	<h:panelGroup id="groupAsignacion" rendered="#{asignacionFolioBean.bndAsignacion}">
+	    		<h:form id="asignacionForm" style="width:100%">
+					<h:panelGrid id="panelAsignacion" style="width:100%">
+	    				<h:panelGrid id="detalleFolio" columns="2" columnClasses="panelGrid-label,panelGrid-value"  
+	    								style="margin-top:20px;" styleClass="tablaIncidencias" >
+	    								
+			    			<h:outputLabel value="Folio federal "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.folioFederal}" />
+
+			    			<h:outputLabel value="Nombre "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.nombre}" />
+
+			    			<h:outputLabel value="CURP "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.curp}" />
+
+			    			<h:outputLabel value="Nivel o Asignatura "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.plaza}" />
+	    				</h:panelGrid>
+	    				
+	    				<h:panelGrid id="detalleConsultaPlazas" columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<p:outputLabel value="Id. Vacante: "/>
+			    			<p:inputText value="#{asignacionFolioBean.idVacante}" maxlength="6" size="10" />
+			    			
+			    			<p:outputLabel value="CCT: "/>
+			    			<p:inputText value="#{asignacionFolioBean.cct}" maxlength="10" size="15" />
+
+			    			<p:outputLabel value="Municipio: "/>
+			    			<p:selectOneMenu value="#{asignacionFolioBean.idMunicipio}" >
+			    				<f:selectItem itemLabel="--Selecciona--" itemValue="0"/>
+			    				<f:selectItems value="#{asignacionFolioBean.lstMunicipio}" var="mpo" itemLabel="#{mpo.descripcion}" itemValue="#{mpo.idItem}" />
+			    			</p:selectOneMenu>	    				
+	    				</h:panelGrid>
+	
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Consultar" action="#{asignacionFolioBean.consultarPlazas}" icon="ui-icon-search" 
+				    							onstart="PF('blockUIWidget2').block()" oncomplete="PF('blockUIWidget2').unblock()"
+				    							update="panelAsignacion"/>
+				    		
+				    		<p:commandButton value="Limpiar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update="panelAsignacion" listener="#{asignacionFolioBean.limpiarPlazas}"></p:ajax>
+				    		</p:commandButton>
+				    		
+				    		<p:commandButton value="Renunciar" action="#{asignacionFolioBean.inicializarRenuncia}" update=":panelVista" icon="ui-icon-cancel" />
+				    		
+				    		<p:commandButton value="Cancelar" action="#{asignacionFolioBean.cancelarAsignacion}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+				    		
+				    	</h:panelGrid>
+	    				
+		    			<h:panelGroup rendered="#{not empty asignacionFolioBean.lstVacante}" >
+					        <p:dataTable id="dataVac" var="data" value="#{asignacionFolioBean.lstVacante}" 
+					        			  emptyMessage="No se encontrarón registros." rowIndexVar="rowIdx" 
+					        			  rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" styleClass="tablaIncidencias"  >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Plazas Vacantes</p:outputLabel>
+					            </f:facet>
+
+					            <p:column headerText="Clave">
+					                <h:outputText value="#{data.cve}" />
+					            </p:column>
+					            <p:column headerText="Tipo vacante">
+					                <h:outputText value="#{data.tpoVacante}"/>
+					            </p:column>
+					            <p:column headerText="Función">
+					                <h:outputText value="#{data.funcion}" />
+					            </p:column>
+					            <p:column headerText="Asignatura">
+					                <h:outputText value="#{data.asginatura}"/>
+					            </p:column>
+					            <p:column headerText="Plaza-Jornada">
+					                <h:outputText value="#{data.descTpoVacante}"/>
+					            </p:column>
+					            <p:column headerText="Horas">
+					                <h:outputText value="#{data.horas}"/>
+					            </p:column>
+					            <p:column headerText="CCT">
+					                <h:outputText value="#{data.cmpCCT}"/>
+					            </p:column>
+					            <p:column headerText="Nombre CCT">
+					                <h:outputText value="#{data.nomCCT}"/>
+					            </p:column>
+					            <p:column headerText="Turno">
+					                <h:outputText value="#{data.turno}"/>
+					            </p:column>
+					            <p:column headerText="Municipio">
+					                <h:outputText value="#{data.municipio}"/>
+					            </p:column>
+					            <p:column headerText="Georef." style="width:5%" >
+					            	<p:commandLink actionListener="#{asignacionFolioBean.marcarCCT(data)}" process="@this"
+					            					update=":asignacionForm:panelGeoref" oncomplete="PF('gmapDialog').show();" >
+					            		<h:panelGroup styleClass="ui-icon ui-icon-tag" />
+					            	</p:commandLink>
+					            </p:column>
+								<p:column headerText="Asignar" style="width:5%" >
+									<p:commandLink actionListener="#{asignacionFolioBean.prepararAsignacion(data)}" 
+													update=":asignacionForm:panelConfirm" oncomplete="PF('asgConfirmDlg').show();" >
+										<h:panelGroup styleClass="ui-icon ui-icon-pencil" />
+									</p:commandLink>
+								</p:column>
+					        </p:dataTable>
+
+							<p:dialog id="gmapDialog" widgetVar="gmapDialog" width="625" height="420" modal="true" appendTo="@(body)">
+								<h:panelGrid id="panelGeoref" style="width:100%">
+									<p:gmap id="gmap" center="#{asignacionFolioBean.centerMap}" zoom="12" type="HYBRID" style="width:600px;height:400px" model="#{asignacionFolioBean.simpleModel}" >
+										<p:ajax event="overlaySelect" listener="#{asignacionFolioBean.onMarkerSelect}" />
+										<p:gmapInfoWindow >
+											<p:outputPanel style="display:block;margin:auto; witdth:40%;">
+												<p:panelGrid columns="2" styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value" >
+													<p:outputLabel for="cct" value="CCT "/>
+													<p:outputLabel id="cct" value="#{asignacionFolioBean.informacionCct.cct}" />
+													
+													<p:outputLabel for="nombreCCT" value="Nombre "/>
+													<p:outputLabel id="nombreCCT" value="#{asignacionFolioBean.informacionCct.nombre}" />
+													
+													<p:outputLabel for="domicilio" value="Domicilio "/>
+													<p:outputLabel id="domicilio" value="#{asignacionFolioBean.informacionCct.domicilio}" />
+													
+													<p:outputLabel for="municipio" value="MunicipiO "/>
+													<p:outputLabel id="municipio" value="#{asignacionFolioBean.informacionCct.nombreMunicipio}" />
+													
+													<p:outputLabel for="montoInvInfo" value="Localidad "/>
+													<p:outputLabel id="montoInvInfo" value="#{asignacionFolioBean.informacionCct.localidad}" />
+													
+													<p:outputLabel for="codigoPostal" value="Código Postal "/>
+													<p:outputLabel id="codigoPostal" value="#{asignacionFolioBean.informacionCct.codigoPostal}" />
+													
+												</p:panelGrid>
+											</p:outputPanel>
+										</p:gmapInfoWindow>
+									</p:gmap>
+								</h:panelGrid>
+							</p:dialog>
+
+							<p:confirmDialog widgetVar="asgConfirmDlg" header="Confirmación" severity="alert" width="400" closable="false" >
+								<f:facet name="message">
+									<h:outputText value="Seleccionó la vacante con los siguientes particulares:" />
+									<h:panelGrid id="panelConfirm" columns="4" style="width:100%;margin-top:20px;margin-bottom:20px;"  styleClass="tablaIncidencias" columnClasses="panelGrid-label,panelGrid-value,panelGrid-label,panelGrid-value" >
+										<p:outputLabel  value="Id"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.cve}" />
+
+										<p:outputLabel  value="Tipo Vacante"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.tpoVacante}" />
+
+										<p:outputLabel  value="Jornada/HSM"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.descTpoVacante}" />
+
+										<p:outputLabel  value="Horas"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.horas}" />
+
+										<p:outputLabel  value="CCT"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.cmpCCT}" />
+
+										<p:outputLabel  value="Nombre CCT"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.nomCCT}" />
+
+										<p:outputLabel  value="Turno"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.turno}" />
+
+										<p:outputLabel  value="Municipio"/>
+										<p:outputLabel value="#{asignacionFolioBean.vacanteSeleccionada.municipio} " />
+																					
+									</h:panelGrid>
+									<h:outputText value="¿Deseas continuar?" />
+								</f:facet>
+								<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+							    	<p:commandButton value="Asignar" action="#{asignacionFolioBean.asignarPlaza}" update=":panelVista"  onclick="PF('asgConfirmDlg').hide();" />
+							    	<p:commandButton value="Verificar" onclick="PF('asgConfirmDlg').hide();" />
+							    </h:panelGrid>							    
+							</p:confirmDialog>
+							
+		    			</h:panelGroup>
+						
+					</h:panelGrid>
+
+			    	<pe:blockUI widgetVar="blockUIWidget2">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right:12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+
+	    		</h:form>
+	    	</h:panelGroup>
+
+	    	<h:panelGroup id="groupNombramientos" rendered="#{asignacionFolioBean.bndNombramientos}">
+	    		<h:form id="nombramientoForm" style="width:100%">
+					<h:panelGrid id="panelNombramientos" style="width:100%">
+	    				<h:panelGrid id="detalleFolioNombramientos" columns="2" columnClasses="panelGrid-label,panelGrid-value"  
+	    								style="margin-top:20px;" styleClass="tablaIncidencias" >
+			    			<h:outputLabel value="Folio federal "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.folioFederal}" />
+
+			    			<h:outputLabel value="Nombre "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.nombre}" />
+
+			    			<h:outputLabel value="CURP "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.curp}" />
+
+			    			<h:outputLabel value="Nivel o Asignatura "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.plaza}" />
+	    				</h:panelGrid>
+
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Regresar" action="#{asignacionFolioBean.cancelarNombramiento}" update=":panelVista" icon="ui-icon-arrowthickstop-1-w" />
+				    	</h:panelGrid>
+
+		    			<h:panelGroup rendered="#{not empty asignacionFolioBean.lstVacante}" >
+					        <p:dataTable id="dataVac" var="data" value="#{asignacionFolioBean.lstVacante}" 
+					        			  emptyMessage="No se encontrarón registros." styleClass="tablaIncidencias" 
+					        			  rowIndexVar="rowIdx" rowStyleClass="#{rowIdx mod 2 == 0 ? 'sombreado' : null}" >
+					        			  
+					            <f:facet name="header">
+					            	<p:outputLabel>Asignaciones</p:outputLabel>
+					            </f:facet>
+
+					            <p:column headerText="Clave">
+					                <h:outputText value="#{data.cve}" />
+					            </p:column>
+					            <p:column headerText="Tipo vacante">
+					                <h:outputText value="#{data.tpoVacante}"/>
+					            </p:column>
+					            <p:column headerText="Función">
+					                <h:outputText value="#{data.funcion}" />
+					            </p:column>
+					            <p:column headerText="Asignatura">
+					                <h:outputText value="#{data.asginatura}"/>
+					            </p:column>
+					            <p:column headerText="Plaza-Jornada">
+					                <h:outputText value="#{data.descTpoVacante}"/>
+					            </p:column>
+					            <p:column headerText="Horas">
+					                <h:outputText value="#{data.horas}"/>
+					            </p:column>
+					            <p:column headerText="CCT">
+					                <h:outputText value="#{data.cmpCCT}"/>
+					            </p:column>
+					            <p:column headerText="Nombre CCT">
+					                <h:outputText value="#{data.nomCCT}"/>
+					            </p:column>
+					            <p:column headerText="Turno">
+					                <h:outputText value="#{data.turno}"/>
+					            </p:column>
+					            <p:column headerText="Municipio">
+					                <h:outputText value="#{data.municipio}"/>
+					            </p:column>
+
+								<p:column headerText="NOMBRAMIENTO" style="width:5%" >
+									<p:commandLink actionListener="#{asignacionFolioBean.prepararGenNombramiento(data)}"  
+													update=":nombramientoForm:panelConfirmGenNomb" oncomplete="PF('asgConfirmDlg1').show();" >
+										<h:graphicImage name="img/pdf.png" />
+										
+									</p:commandLink>
+								</p:column>
+
+					            <p:column headerText="CHECKLIST" style="width:5%" >
+					            	<h:commandButton action="#{asignacionFolioBean.generarFormato}" image="../../../resources/img/pdf.png" title="Checklist"
+					            						onstart="PF('blockUIWidget4').block()" oncomplete="PF('blockUIWidget4').unblock()" >
+					            		<f:setPropertyActionListener target="#{asignacionFolioBean.aspiranteFormato}" value="#{asignacionFolioBean.aspirante}" />
+					            		<f:setPropertyActionListener target="#{asignacionFolioBean.formato}" value="CHECK" />
+					            	</h:commandButton>
+					            </p:column>
+
+					        </p:dataTable>
+
+							<p:confirmDialog widgetVar="asgConfirmDlg1" header="Importante" severity="alert" width="400" closable="false" >
+								<f:facet name="message">
+									
+									<h:panelGrid id="panelConfirmGenNomb" columns="1" style="width:100%;margin-top:20px;margin-bottom:20px;" >
+										<h:outputText style="font-weight: bold;" value="Este proceso podría demorar varios segundos, " />
+										<h:outputText style="font-weight: bold;" value="da click en [Continuar] y espera hasta que hayas obtenido una respuesta." />
+									</h:panelGrid>
+								</f:facet>
+								<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+							    	<h:commandButton value="Continuar" action="#{asignacionFolioBean.generarNombramiento}" update=":panelVista"  onclick="PF('asgConfirmDlg1').hide();" />
+							    	<h:commandButton value="Cancelar" onclick="PF('asgConfirmDlg1').hide();" />
+							    </h:panelGrid>							    
+							</p:confirmDialog>
+
+		    			</h:panelGroup>
+						
+					</h:panelGrid>
+
+			    	<pe:blockUI widgetVar="blockUIWidget4">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+	    		</h:form>
+	    	</h:panelGroup>
+
+	    	<h:panelGroup id="groupRenuncia" rendered="#{asignacionFolioBean.bndRenuncia}">
+	    		<h:form id="renunciaForm" style="width:100%">
+					<h:panelGrid id="panelRenuncia" style="width:100%">
+	    				<h:panelGrid id="detalleFolioRenuncia" columns="2" columnClasses="panelGrid-label,panelGrid-value"  
+	    								style="margin-top:20px;" styleClass="tablaIncidencias" >
+	    								
+			    			<h:outputLabel value="Folio Federal "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.folioFederal}" />
+
+			    			<h:outputLabel value="Nombre "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.nombre}" />
+
+			    			<h:outputLabel value="CURP"/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.curp}" />
+
+			    			<h:outputLabel value="Nivel o Asignatura "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.plaza}" />
+			    			
+			    			<h:outputLabel value="Estatus "/>
+			    			<p:outputLabel value="#{asignacionFolioBean.aspirante.descStatus}" />
+			    			
+	    				</h:panelGrid>
+	    				
+	    				<h:panelGrid id="motivoRenuncia" columns="2" columnClasses="formLabel,formEdit"  style="margin-top:20px;" >
+			    			<h:outputLabel value="Motivo de rechazo: *"/>
+			    			<h:selectOneMenu value="#{asignacionFolioBean.idMotivoRechazo}" >
+			    				<f:selectItem itemLabel="--Selecciona--" itemValue="0"/>
+			    				<f:selectItems value="#{asignacionFolioBean.lstMotivoRechazo}" var="mvo" itemLabel="#{mvo.descItem}" itemValue="#{mvo.idItem}" />
+			    			</h:selectOneMenu>
+			    			<h:outputLabel value="Observación: *"/>
+							<h:panelGrid columns="1">
+								<p:inputTextarea value="#{asignacionFolioBean.observacionRechazo}" rows="4" cols="80" counter="contador0" maxlength="300" counterTemplate="{0} caracteres restantes." autoResize="false" />
+								<h:outputText id="contador0" styleClass="contador" />
+							</h:panelGrid>
+	    				</h:panelGrid>
+	
+				    	<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+				    		<p:commandButton value="Renunciar" icon="ui-icon-gear" onclick="PF('rechConfirmDlg').show();" update=":renunciaForm:panelRech"/>
+				    		<p:commandButton value="Cancelar" immediate="true" icon="ui-icon-arrowrefresh-1-w">
+				    			<p:ajax event="click" update=":panelVista" listener="#{asignacionFolioBean.regresarAsignacion}"></p:ajax>
+				    		</p:commandButton>
+				    	</h:panelGrid>
+				    	
+					</h:panelGrid>
+
+					<p:confirmDialog widgetVar="rechConfirmDlg" header="Confirmación" severity="alert" width="600" closable="false" >
+						<f:facet name="message">
+							<h:outputText value="Por favor, verifica los siguientes datos antes de continuar:" />
+							<h:panelGrid id="panelRech" style="width:100%;margin-top:20px;margin-bottom:20px;"  styleClass="tablaIncidencias" >
+								<h:panelGrid columns="4" columnClasses="panelGrid-label,panelGrid-value,panelGrid-label,panelGrid-value" >
+					    			<h:outputLabel value="Folio Federal "/>
+					    			<p:outputLabel value="#{asignacionFolioBean.aspirante.folioFederal}" />
+		
+					    			<h:outputLabel value="Nombre "/>
+					    			<p:outputLabel value="#{asignacionFolioBean.aspirante.nombre}" />
+
+					    			<h:outputLabel value="Nivel o Asignatura "/>
+					    			<p:outputLabel value="#{asignacionFolioBean.aspirante.plaza}" />
+		
+					    			<h:outputLabel value="Estatus "/>
+					    			<p:outputLabel value="#{asignacionFolioBean.aspirante.descStatus}" />
+
+								</h:panelGrid>
+								<h:panelGrid columns="2" columnClasses="panelGrid-label,panelGrid-value" >
+					    			<h:outputLabel value="Motivo de rechazo "/>
+					    			<h:selectOneMenu value="#{asignacionFolioBean.idMotivoRechazo}" disabled="true" >
+					    				<f:selectItem itemLabel="--Selecciona--" itemValue="0"/>
+					    				<f:selectItems value="#{asignacionFolioBean.lstMotivoRechazo}" var="mvo" itemLabel="#{mvo.descItem}" itemValue="#{mvo.idItem}" />
+					    			</h:selectOneMenu>
+					    			
+					    			<h:outputLabel value="Observación "/>
+					    			<p:outputLabel value="#{asignacionFolioBean.observacionRechazo}" />
+								</h:panelGrid>
+							</h:panelGrid>
+							<h:outputText value="¿Deseas continuar?" />
+						</f:facet>
+						<h:panelGrid columns="10" style="margin-top:10px;margin-bottom:10px;" >
+					    	<p:commandButton value="Continuar" action="#{asignacionFolioBean.registrarRenuncia}" update=":panelVista"  onclick="PF('rechConfirmDlg').hide();" />
+					    	<p:commandButton value="Verificar" onclick="PF('rechConfirmDlg').hide();" />
+					    </h:panelGrid>							    
+					</p:confirmDialog>
+
+			    	<pe:blockUI widgetVar="blockUIWidget3">
+			    		<h:panelGrid columns="1">
+			    			<h:graphicImage library="img" name="ajax-loader1.gif" style="margin-right: 12px; vertical-align: middle;"/>
+			    			<h:outputText value="Por favor espere ..." style="white-space: nowrap;"/>
+			    		</h:panelGrid>	
+			    	</pe:blockUI>
+
+	    		</h:form>	    	
+	    	</h:panelGroup>
+
+	    </h:panelGroup>
+	</ui:define>
+</ui:composition>
+</html>

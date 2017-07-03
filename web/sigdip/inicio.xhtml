@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="/WEB-INF/plantillas/base.xhtml">
+	<ui:define name="content">
+		<p:messages id="message" showDetail="false" showSummary="true" closable="true" />
+	    <br/>
+		<h2>SIAPRODEM | Sistema de Administraci&oacute;n del Servicio Profesional Docente del Estado de M&eacute;xico</h2>
+		<br/>
+		<br/>
+		<p:spacer />
+		
+		<h:form id="formAvisos" >
+			<p:carousel value="#{loginBean.lstAvisos}" var="aviso" numVisible="1" autoPlayInterval="10000" circular="true" effect="easeInStrong" headerText="AVISOS" itemStyle="height=300px;" style="margin: 0 auto;" >
+				<p:tab title="#{aviso.titulo}">
+					<h:panelGrid columns="2" cellpadding="10">
+						<h:panelGrid columns="1">
+							<p:graphicImage height="250" width="200" library="img" name="cespdem.png" />
+						</h:panelGrid>
+						<h:panelGrid columns="1">
+							<p:outputLabel  style="font-weight: bold; display: block; width: 600px;" value="#{aviso.titulo}" />
+							<p:separator />
+							<h:outputText style="display: block; width: 600px;" escape="false" value="#{aviso.texto}" />
+							
+						</h:panelGrid>
+						
+					</h:panelGrid>
+				</p:tab>
+			</p:carousel>
+		</h:form>
+
+	</ui:define>
+</ui:composition>
+</html>
